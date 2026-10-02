@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liberty Business — Guía Fijo SOHO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:#0065BD; --orange:#FF5300; --green:#059669; --purple:#7c3aed;
+      --text:#1f2937;  --muted:#6b7280; --bg:#f8fafc; --border:#e5e7eb;
+    }
+    body { font-family:'Barlow',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+    /* ── HEADER ── */
+    .header { background:linear-gradient(135deg,#0065BD 0%,#004a8f 100%); color:white; padding:0 20px; display:flex; align-items:center; gap:12px; height:56px; position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,.25); }
+    .header-logo { font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:800; white-space:nowrap; }
+    .header-logo span { color:var(--orange); }
+    .header-sub { font-size:12px; opacity:.7; font-weight:500; border-left:1px solid rgba(255,255,255,.3); padding-left:12px; white-space:nowrap; }
+    .lang-toggle { margin-left:auto; display:flex; background:rgba(255,255,255,.15); border-radius:6px; overflow:hidden; flex-shrink:0; }
+    .lang-btn { padding:6px 12px; border:none; cursor:pointer; font-family:'Barlow',sans-serif; font-size:12px; font-weight:800; color:rgba(255,255,255,.6); background:transparent; transition:all .15s; letter-spacing:.5px; }
+    .lang-btn.on { background:rgba(255,255,255,.25); color:white; }
+    .hdr-badge { background:rgba(255,255,255,.12); border-radius:20px; padding:3px 10px; font-size:11px; font-weight:700; white-space:nowrap; }
+
+    /* ── TABS ── */
+    .tabs-nav { background:white; border-bottom:2px solid var(--border); display:flex; overflow-x:auto; padding:0 12px; position:sticky; top:56px; z-index:99; scrollbar-width:none; }
+    .tabs-nav::-webkit-scrollbar { display:none; }
+    .tab-btn { padding:13px 16px; border:none; background:none; cursor:pointer; font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; color:var(--muted); white-space:nowrap; border-bottom:3px solid transparent; margin-bottom:-2px; transition:all .15s; }
+    .tab-btn:hover { color:var(--blue); }
+    .tab-btn.active { color:var(--blue); border-bottom-color:var(--blue); }
+
+    /* ── LAYOUT ── */
+    .tab-pane { display:none; padding:20px; max-width:1200px; margin:0 auto; }
+    .tab-pane.active { display:block; }
+
+    /* ── CONTROLS ── */
+    .controls { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; align-items:center; }
+    .ctrl-label { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+    .ctrl-sep { width:1px; background:var(--border); height:26px; margin:0 6px; }
+    .pill { padding:6px 15px; border-radius:20px; border:2px solid var(--border); background:white; cursor:pointer; font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; color:var(--muted); transition:all .15s; }
+    .pill:hover { border-color:var(--blue); color:var(--blue); }
+    .pill.on     { background:var(--blue);   border-color:var(--blue);   color:white; }
+    .pill.on-fmc { background:var(--purple); border-color:var(--purple); color:white; }
+
+    /* ── DISCLAIMERS ── */
+    .disc { border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:12px; font-weight:600; line-height:1.5; display:flex; gap:8px; align-items:flex-start; }
+    .disc .di { font-size:15px; flex-shrink:0; }
+    .disc-info   { background:#eff6ff; border:1px solid #bfdbfe; color:#1d4ed8; }
+    .disc-warn   { background:#fff7ed; border:1px solid #fed7aa; color:#c2410c; }
+    .disc-purple { background:#f5f3ff; border:1px solid #ddd6fe; color:#5b21b6; }
+
+    /* ── INFO BAR ── */
+    .info-bar { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:9px 14px; margin-bottom:18px; display:flex; gap:18px; flex-wrap:wrap; }
+    .info-bar span { font-size:12px; font-weight:600; color:var(--blue); }
+    .info-bar span::before { content:'✓ '; }
+
+    /* ── PLAN CARDS ── */
+    .plan-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(265px,1fr)); gap:14px; }
+    .plan-card { background:white; border-radius:12px; border:1px solid var(--border); padding:18px; transition:box-shadow .15s; }
+    .plan-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.08); }
+    .plan-card.t-coax  { border-top:3px solid var(--blue); }
+    .plan-card.t-d31   { border-top:3px solid var(--orange); }
+    .plan-card.t-fttx  { border-top:3px solid var(--green); }
+    .plan-card.t-fttx15{ border-top:3px solid var(--purple); }
+    .plan-card.t-fmc   { border-top:3px solid var(--purple); }
+    .plan-speed { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:800; line-height:1; }
+    .plan-speed small { font-size:13px; font-weight:600; color:var(--muted); }
+    .plan-meta { display:flex; gap:5px; margin:7px 0 13px; flex-wrap:wrap; align-items:center; }
+    .badge { display:inline-block; padding:2px 7px; border-radius:4px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.3px; }
+    .b-coax   { background:#dbeafe; color:#1d4ed8; }
+    .b-d31    { background:#fed7aa; color:#c2410c; }
+    .b-fttx   { background:#d1fae5; color:#065f46; }
+    .b-fttx15 { background:#ede9fe; color:#6d28d9; }
+    .b-fmc    { background:#f5f3ff; color:#5b21b6; }
+    .b-double { background:#fef3c7; color:#92400e; font-size:10px; }
+    .price-rows { display:flex; flex-direction:column; gap:5px; }
+    .pr { display:flex; justify-content:space-between; align-items:center; padding:6px 9px; border-radius:7px; background:var(--bg); }
+    .pr.hi { background:#eff6ff; border:1px solid #bfdbfe; }
+    .pr-label { font-size:12px; font-weight:600; color:var(--muted); }
+    .pr-val   { font-size:16px; font-weight:800; color:var(--blue); }
+    .pr-val.na { font-size:12px; color:#d1d5db; font-weight:600; }
+    .na-row { text-align:center; padding:10px; font-size:13px; color:var(--muted); font-style:italic; }
+
+    /* ── SECTION TITLE ── */
+    .s-title { font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; border-bottom:2px solid var(--border); padding-bottom:7px; margin-bottom:14px; }
+    .s-sub { font-size:12px; color:var(--muted); margin-top:-10px; margin-bottom:14px; }
+    .sec-header { display:flex; align-items:center; gap:12px; margin:24px 0 14px; }
+    .sec-header-line { flex:1; height:2px; background:var(--border); }
+    .sec-header-label { font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:1px; padding:3px 12px; border-radius:20px; white-space:nowrap; }
+    .sec-fmc { background:#f5f3ff; color:#5b21b6; }
+
+    /* ── LTO TABLE ── */
+    .tbl-wrap { overflow-x:auto; border-radius:12px; border:1px solid var(--border); background:white; margin-bottom:14px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    thead th { background:var(--blue); color:white; padding:9px 11px; text-align:center; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.3px; }
+    thead th:first-child { text-align:left; min-width:110px; }
+    .thead-sub th { font-size:11px; padding:5px 10px; }
+    tbody tr:nth-child(even) { background:#f9fafb; }
+    tbody tr:hover { background:#eff6ff; }
+    tbody td { padding:8px 11px; border-bottom:1px solid var(--border); text-align:center; }
+    tbody td:first-child { text-align:left; font-weight:700; }
+    .c-list { color:var(--muted);  font-weight:600; }
+    .c-lead { color:var(--orange); font-weight:700; }
+    .c-fmc  { color:var(--purple); font-weight:700; }
+    .c-na   { color:#d1d5db; font-size:12px; }
+    .legend { display:flex; gap:14px; flex-wrap:wrap; margin-top:6px; margin-bottom:20px; }
+    .legend-item { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--muted); }
+    .legend-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+
+    /* ── CARD GRID ── */
+    .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:11px; margin-bottom:22px; }
+    .addon-card { background:white; border:1px solid var(--border); border-radius:10px; padding:13px 15px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .ac-name { font-size:13px; font-weight:700; }
+    .ac-sub  { font-size:11px; color:var(--muted); margin-top:2px; }
+    .ac-price { font-size:19px; font-weight:800; color:var(--blue); white-space:nowrap; }
+    .ac-mo   { font-size:10px; color:var(--muted); }
+    .tag-lto { display:inline-block; padding:2px 5px; border-radius:3px; font-size:10px; font-weight:700; background:#fef3c7; color:#92400e; margin-left:4px; }
+
+    /* ── SPECIAL CARDS ── */
+    .special-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(135px,1fr)); gap:11px; margin-bottom:22px; }
+    .special-card { background:white; border:1px solid var(--border); border-radius:10px; padding:15px; text-align:center; }
+    .sc-speed { font-family:'Barlow Condensed',sans-serif; font-size:24px; font-weight:800; }
+    .sc-speed small { font-size:12px; color:var(--muted); font-weight:600; }
+    .sc-price { font-size:20px; font-weight:800; color:var(--orange); margin-top:3px; }
+    .sc-mo { font-size:10px; color:var(--muted); }
+
+    /* ── STB ── */
+    .stb-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; margin-bottom:7px; }
+    .stb-card { background:white; border:1px solid var(--border); border-radius:8px; padding:11px; text-align:center; }
+    .stb-lbl  { font-size:11px; color:var(--muted); font-weight:600; margin-bottom:3px; }
+    .stb-price { font-size:17px; font-weight:800; color:var(--blue); }
+    .stb-price.free { color:var(--green); }
+
+    /* ── PROMO CARD ── */
+    .promo-card { background:white; border-radius:12px; border:1px solid var(--border); border-left:4px solid var(--orange); padding:18px 22px; margin-bottom:18px; }
+    .promo-title { font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:800; color:var(--orange); text-transform:uppercase; margin-bottom:9px; }
+    .promo-rules { list-style:none; display:flex; flex-direction:column; gap:7px; }
+    .promo-rules li { font-size:13px; padding-left:15px; position:relative; line-height:1.5; }
+    .promo-rules li::before { content:'•'; position:absolute; left:0; color:var(--orange); font-weight:700; }
+
+    /* ── HOW-TO TAB ── */
+    .guide-hero { background:linear-gradient(135deg,#0065BD 0%,#004a8f 100%); color:white; border-radius:14px; padding:26px 30px; margin-bottom:24px; }
+    .guide-hero h1 { font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:800; margin-bottom:5px; }
+    .guide-hero p { font-size:13px; opacity:.85; max-width:540px; line-height:1.6; }
+    .how-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(275px,1fr)); gap:14px; margin-bottom:24px; }
+    .how-card { background:white; border:1px solid var(--border); border-radius:12px; padding:18px; }
+    .how-card-hdr { display:flex; align-items:center; gap:11px; margin-bottom:11px; }
+    .how-icon { font-size:22px; width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .hi-blue   { background:#dbeafe; } .hi-orange { background:#fed7aa; }
+    .hi-green  { background:#d1fae5; } .hi-purple { background:#ede9fe; }
+    .hi-yellow { background:#fef9c3; } .hi-pink   { background:#fce7f3; }
+    .how-title { font-size:14px; font-weight:800; }
+    .how-body  { font-size:12px; color:var(--muted); line-height:1.65; }
+    .how-body strong { color:var(--text); }
+    .rule-box { background:white; border:1px solid var(--border); border-left:4px solid var(--blue); border-radius:10px; padding:14px 18px; margin-bottom:12px; }
+    .rule-box.o { border-left-color:var(--orange); }
+    .rule-box.g { border-left-color:var(--green);  }
+    .rule-box.p { border-left-color:var(--purple); }
+    .rule-title { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; margin-bottom:5px; }
+    .rule-body  { font-size:12px; color:var(--muted); line-height:1.6; }
+    .rule-body strong { color:var(--text); }
+
+    /* ── PROPOSAL / CART ── */
+    .prop-layout { display:grid; grid-template-columns:1fr 360px; gap:18px; align-items:start; }
+    .prop-section { background:white; border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:14px; }
+    .prop-sec-title { font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; margin-bottom:14px; color:var(--text); padding-bottom:8px; border-bottom:1px solid var(--border); }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .form-group { display:flex; flex-direction:column; gap:5px; }
+    .form-label { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; }
+    .form-input { padding:8px 11px; border:1.5px solid var(--border); border-radius:8px; font-family:'Barlow',sans-serif; font-size:13px; font-weight:500; color:var(--text); transition:border-color .15s; }
+    .form-input:focus { outline:none; border-color:var(--blue); }
+    .form-select { padding:8px 11px; border:1.5px solid var(--border); border-radius:8px; font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; color:var(--text); background:white; cursor:pointer; }
+    .form-select:focus { outline:none; border-color:var(--blue); }
+    .sel-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+    .price-preview { background:var(--bg); border-radius:10px; padding:12px 15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .pp-label { font-size:12px; font-weight:600; color:var(--muted); }
+    .pp-price { font-size:22px; font-weight:800; color:var(--blue); }
+    .pp-price.na { color:#d1d5db; font-size:14px; }
+    .btn-add { width:100%; padding:10px; border:none; border-radius:8px; background:var(--blue); color:white; font-family:'Barlow',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:all .15s; }
+    .btn-add:hover { background:#004a8f; }
+    .btn-add:disabled { background:#e5e7eb; color:#9ca3af; cursor:not-allowed; }
+    .extras-list { display:flex; flex-direction:column; gap:2px; }
+    .extra-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--bg); }
+    .extra-row:last-child { border-bottom:none; }
+    .extra-row input[type=checkbox] { width:16px; height:16px; cursor:pointer; accent-color:var(--blue); flex-shrink:0; }
+    .extra-row input[type=number] { width:52px; padding:4px 6px; border:1.5px solid var(--border); border-radius:6px; font-family:'Barlow',sans-serif; font-size:12px; font-weight:600; text-align:center; }
+    .extra-name { flex:1; font-size:13px; font-weight:600; }
+    .extra-sub  { font-size:11px; color:var(--muted); }
+    .extra-price { font-size:13px; font-weight:700; color:var(--blue); white-space:nowrap; }
+    .extras-cat { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin:12px 0 6px; padding-bottom:4px; border-bottom:1px solid var(--border); }
+    /* Cart */
+    .cart-box { background:white; border:1px solid var(--border); border-radius:12px; padding:18px; position:sticky; top:120px; }
+    .cart-title { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; margin-bottom:14px; padding-bottom:8px; border-bottom:2px solid var(--border); }
+    .cart-items { display:flex; flex-direction:column; gap:1px; min-height:60px; margin-bottom:12px; }
+    .cart-item { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--bg); }
+    .cart-item-name { flex:1; font-size:12px; font-weight:600; line-height:1.3; }
+    .cart-item-price { font-size:13px; font-weight:800; color:var(--blue); white-space:nowrap; }
+    .cart-remove { border:none; background:none; color:#d1d5db; font-size:16px; cursor:pointer; padding:0 2px; line-height:1; transition:color .15s; flex-shrink:0; }
+    .cart-remove:hover { color:#ef4444; }
+    .cart-empty { font-size:12px; color:#d1d5db; text-align:center; padding:20px 0; font-style:italic; }
+    .cart-divider { height:1px; background:var(--border); margin:10px 0; }
+    .cart-total-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; }
+    .cart-total-label { font-size:13px; font-weight:700; }
+    .cart-total-value { font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:800; color:var(--blue); }
+    .notes-input { width:100%; padding:8px 11px; border:1.5px solid var(--border); border-radius:8px; font-family:'Barlow',sans-serif; font-size:12px; resize:vertical; min-height:60px; margin:10px 0; }
+    .notes-input:focus { outline:none; border-color:var(--blue); }
+    .btn-gen  { width:100%; padding:11px; border:none; border-radius:8px; background:var(--orange); color:white; font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:800; cursor:pointer; letter-spacing:.3px; transition:all .15s; margin-bottom:8px; }
+    .btn-gen:hover { background:#cc4200; }
+    .btn-clr  { width:100%; padding:9px; border:1.5px solid var(--border); border-radius:8px; background:white; color:var(--muted); font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all .15s; }
+    .btn-clr:hover { border-color:#ef4444; color:#ef4444; }
+
+    /* ── DIVIDER ── */
+    .divider { height:1px; background:var(--border); margin:22px 0; }
+
+    /* ── JOURNEY PROPOSAL ── */
+    .jlayout{display:grid;grid-template-columns:1fr 295px;gap:16px;align-items:start;}
+    .jmain{display:flex;flex-direction:column;gap:10px;}
+    .jright{position:sticky;top:120px;}
+    /* Stepper bar */
+    .jstepbar{display:flex;align-items:center;background:white;border:1px solid var(--border);border-radius:10px;padding:11px 14px;overflow-x:auto;scrollbar-width:none;gap:0;}
+    .jstepbar::-webkit-scrollbar{display:none;}
+    .jsi{display:flex;align-items:center;gap:5px;flex-shrink:0;transition:opacity .15s;}
+    .jsi.done{cursor:pointer;} .jsi.done:hover{opacity:.75;}
+    .jsi-n{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--muted);background:white;transition:all .2s;flex-shrink:0;}
+    .jsi.done .jsi-n{background:var(--green);border-color:var(--green);color:white;}
+    .jsi.active .jsi-n{background:var(--blue);border-color:var(--blue);color:white;}
+    .jsi-l{font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;}
+    .jsi.active .jsi-l{color:var(--blue);font-weight:700;} .jsi.done .jsi-l{color:var(--green);}
+    .jsep{width:20px;height:2px;background:var(--border);margin:0 3px;flex-shrink:0;transition:background .2s;}
+    .jsi.done+.jsep{background:var(--green);}
+    /* Panels */
+    .jpanel{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    .jpanel.done{cursor:pointer;} .jpanel.done:hover{border-color:var(--blue);}
+    .jpanel-done-hdr{display:flex;align-items:center;gap:9px;padding:11px 15px;}
+    .jpanel-chk{width:18px;height:18px;border-radius:50%;background:var(--green);color:white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}
+    .jpanel-done-ttl{font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0;}
+    .jpanel-done-val{font-size:13px;font-weight:800;color:var(--text);flex:1;}
+    .jpanel-chng{font-size:11px;font-weight:700;color:var(--blue);white-space:nowrap;}
+    .jpanel-hdr{padding:13px 17px;border-bottom:1px solid var(--border);}
+    .jpanel-sn{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--blue);}
+    .jpanel-st{font-size:15px;font-weight:800;color:var(--text);margin-top:1px;}
+    .jpanel-body{padding:15px 17px;}
+    /* Journey cards */
+    .jcards{display:grid;gap:9px;}
+    .jcards.c3{grid-template-columns:repeat(3,1fr);} .jcards.c2{grid-template-columns:repeat(2,1fr);}
+    .jcards.ca{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));} .jcards.cb{grid-template-columns:repeat(auto-fill,minmax(165px,1fr));}
+    .jcard{border:2px solid var(--border);border-radius:10px;padding:13px;cursor:pointer;transition:all .15s;background:white;position:relative;}
+    .jcard:hover{border-color:var(--blue);box-shadow:0 2px 8px rgba(0,101,189,.1);}
+    .jcard.sel{border-color:var(--blue);background:#eff6ff;}
+    .jcard.sel::after{content:'✓';position:absolute;top:7px;right:9px;font-size:12px;font-weight:800;color:var(--blue);}
+    .jcard.off{opacity:.38;cursor:not-allowed;background:#f9fafb;} .jcard.off:hover{border-color:var(--border);box-shadow:none;}
+    .jc-icon{font-size:20px;margin-bottom:5px;} .jc-name{font-size:14px;font-weight:800;margin-bottom:2px;}
+    .jc-sub{font-size:11px;color:var(--muted);line-height:1.4;} .jc-range{font-size:10px;color:var(--muted);margin-top:3px;}
+    .jc-price{font-size:16px;font-weight:800;color:var(--blue);margin-top:7px;}
+    .jc-price small{font-size:10px;color:var(--muted);font-weight:600;} .jc-price.na{font-size:11px;color:#d1d5db;}
+    .jc-inc{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;}
+    .jcbadge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:800;text-transform:uppercase;margin-bottom:4px;}
+    .jcb-bl{background:#dbeafe;color:#1d4ed8;} .jcb-gr{background:#d1fae5;color:#065f46;}
+    .jcb-or{background:#fed7aa;color:#c2410c;} .jcb-pu{background:#ede9fe;color:#6d28d9;}
+    .jcb-gy{background:#f3f4f6;color:#6b7280;}
+    /* Add-ons */
+    .jao-grp{margin-bottom:15px;} .jao-grp:last-child{margin-bottom:0;}
+    .jao-gtl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+    .jao-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:7px;}
+    .jao-item{border:1.5px solid var(--border);border-radius:8px;padding:9px 11px;display:flex;align-items:center;gap:9px;cursor:pointer;transition:all .15s;background:white;-webkit-user-select:none;user-select:none;}
+    .jao-item:hover{border-color:var(--blue);} .jao-item.on{border-color:var(--blue);background:#eff6ff;}
+    .jao-item input[type=checkbox]{width:15px;height:15px;accent-color:var(--blue);cursor:pointer;flex-shrink:0;}
+    .jao-iname{font-size:12px;font-weight:700;flex:1;} .jao-isub{font-size:10px;color:var(--muted);}
+    .jao-iprice{font-size:12px;font-weight:800;color:var(--blue);white-space:nowrap;}
+    .jao-qty{border:1.5px solid var(--border);border-radius:8px;padding:9px 11px;display:flex;align-items:center;gap:9px;background:white;}
+    .jao-qin{width:46px;padding:4px 5px;border:1.5px solid var(--border);border-radius:6px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;text-align:center;}
+    .jao-note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:9px 12px;font-size:11px;color:#92400e;margin-bottom:10px;line-height:1.5;}
+    .jao-inc{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:9px 12px;font-size:11px;color:#065f46;margin-bottom:10px;}
+    .jcont{width:100%;padding:11px;border:none;border-radius:8px;background:var(--blue);color:white;font-family:'Barlow',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;margin-top:12px;}
+    .jcont:hover{background:#004a8f;}
+    /* Summary box */
+    .jsumbox{background:white;border:1px solid var(--border);border-radius:12px;padding:15px;}
+    .jsum-ttl{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding-bottom:8px;border-bottom:2px solid var(--border);margin-bottom:11px;}
+    .jsum-plan{background:var(--bg);border-radius:8px;padding:9px 11px;margin-bottom:9px;}
+    .jsum-pnm{font-size:11px;font-weight:700;margin-bottom:2px;}
+    .jsum-ppr{font-family:'Barlow Condensed',sans-serif;font-size:21px;font-weight:800;color:var(--blue);}
+    .jsum-ppr small{font-size:10px;color:var(--muted);font-weight:600;}
+    .jsum-aos{display:flex;flex-direction:column;gap:2px;margin-bottom:8px;max-height:150px;overflow-y:auto;}
+    .jsum-ao{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid var(--bg);}
+    .jsum-an{color:var(--muted);font-weight:600;flex:1;} .jsum-ap{font-weight:700;color:var(--text);white-space:nowrap;}
+    .jsum-div{height:1px;background:var(--border);margin:9px 0;}
+    .jsum-tot{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+    .jsum-tl{font-size:12px;font-weight:700;} .jsum-tv{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--blue);}
+    .jsum-emp{font-size:11px;color:#d1d5db;text-align:center;padding:14px 0;font-style:italic;}
+    .jbtn-gen{width:100%;padding:10px;border:none;border-radius:8px;background:var(--orange);color:white;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .15s;margin-bottom:7px;letter-spacing:.3px;}
+    .jbtn-gen:hover{background:#cc4200;}
+    .jbtn-rst{width:100%;padding:7px;border:1.5px solid var(--border);border-radius:8px;background:white;color:var(--muted);font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
+    .jbtn-rst:hover{border-color:#ef4444;color:#ef4444;}
+    /* Step 6 form */
+    .jcf{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
+    .jcfg{display:flex;flex-direction:column;gap:4px;} .jcff{grid-column:1/-1;}
+    .jcfl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+    .jcfi{padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:500;color:var(--text);}
+    .jcfi:focus{outline:none;border-color:var(--blue);}
+    @media(max-width:900px){.jlayout{grid-template-columns:1fr;} .jcards.c3{grid-template-columns:1fr 1fr;}}
+    @media(max-width:600px){.jcards.c3,.jcards.c2{grid-template-columns:1fr;} .jcf{grid-template-columns:1fr;}}
+
+    /* ── PRINT STYLES ── */
+    @media print {
+      body > * { display:none !important; }
+      #print-view { display:block !important; }
+    }
+    #print-view { display:none; font-family:'Barlow',sans-serif; color:#1f2937; }
+    .pv-wrap { max-width:720px; margin:0 auto; padding:32px; }
+    .pv-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; padding-bottom:16px; border-bottom:3px solid #0065BD; }
+    .pv-logo { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:800; line-height:1; }
+    .pv-logo span { color:#FF5300; }
+    .pv-logo small { display:block; font-size:13px; font-weight:600; color:#6b7280; margin-top:2px; }
+    .pv-date-box { text-align:right; font-size:12px; color:#6b7280; }
+    .pv-date-box strong { display:block; font-size:16px; color:#1f2937; font-weight:800; }
+    .pv-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; background:#f8fafc; border-radius:10px; padding:16px; margin-bottom:22px; }
+    .pv-info-item label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#6b7280; display:block; margin-bottom:3px; }
+    .pv-info-item span  { font-size:15px; font-weight:700; }
+    .pv-sec-title { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; color:#0065BD; padding-bottom:4px; border-bottom:1px solid #e5e7eb; }
+    .pv-table { width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px; }
+    .pv-table thead th { background:#0065BD; color:white; padding:8px 12px; text-align:left; font-weight:700; font-size:11px; text-transform:uppercase; }
+    .pv-table thead th:last-child { text-align:right; }
+    .pv-table tbody td { padding:9px 12px; border-bottom:1px solid #e5e7eb; }
+    .pv-table tbody td:last-child { text-align:right; font-weight:700; color:#0065BD; }
+    .pv-total-row { display:flex; justify-content:space-between; align-items:center; background:#0065BD; color:white; border-radius:8px; padding:12px 16px; margin-bottom:20px; }
+    .pv-total-label { font-size:14px; font-weight:700; }
+    .pv-total-value { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:800; }
+    .pv-notes { background:#f8fafc; border-radius:8px; padding:12px 16px; margin-bottom:24px; font-size:13px; }
+    .pv-notes label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#6b7280; display:block; margin-bottom:5px; }
+    .pv-disc { font-size:10px; color:#9ca3af; margin-bottom:24px; line-height:1.5; }
+    .pv-sig { display:grid; grid-template-columns:1fr 1fr; gap:30px; }
+    .pv-sig-line { border-top:1px solid #1f2937; padding-top:6px; font-size:11px; color:#6b7280; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px){ .prop-layout { grid-template-columns:1fr; } }
+    @media(max-width:680px){ .plan-grid{grid-template-columns:1fr;} .stb-grid{grid-template-columns:repeat(2,1fr);} .tab-btn{padding:11px 12px;font-size:12px;} .header-sub,.hdr-badge{display:none;} .form-grid{grid-template-columns:1fr;} .sel-grid{grid-template-columns:1fr;} .how-grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo">Liberty<span>Business</span></div>
+  <div class="header-sub">Servicios Fijos — SOHO &amp; SMB</div>
+  <div class="lang-toggle">
+    <button id="btn-es" class="lang-btn on" onclick="setLang('es')">ES</button>
+    <button id="btn-en" class="lang-btn"    onclick="setLang('en')">EN</button>
+  </div>
+  <div class="hdr-badge" id="hdr-badge">Abr 2026</div>
+</header>
+
+<nav class="tabs-nav" id="tabs-nav"></nav>
+
+<main id="main-content">
+  <div id="tab-guide"      class="tab-pane active"></div>
+  <div id="tab-planes"     class="tab-pane"></div>
+  <div id="tab-lto"        class="tab-pane"></div>
+  <div id="tab-especiales" class="tab-pane"></div>
+  <div id="tab-addons"     class="tab-pane"></div>
+  <div id="tab-promos"     class="tab-pane"></div>
+  <div id="tab-proposal"   class="tab-pane"></div>
+</main>
+
+<div id="print-view"><div class="pv-wrap" id="pv-inner"></div></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════════════════════════
+const T = {
+ es:{
+  'tab.guide':'📖 Cómo Usar','tab.planes':'📶 Planes','tab.lto':'⚡ Oferta Limitada',
+  'tab.especiales':'🌟 Especiales','tab.addons':'➕ Add-ons','tab.promos':'🎁 Promociones','tab.proposal':'🧾 Cotización',
+  'ctrl.tech':'Tecnología','ctrl.price':'Precio','btn.list':'Lista','btn.promo':'Promo',
+  'b1p-data':'1P Data (HSD)','b1p-voice':'1P Voz','b2p':'2P HSD + VoIP',
+  'b3p-broadcast':'3P Broadcast','b3p-esp':'3P Español / EDP','b3p-ult':'3P Ultimate',
+  'info.nocontract':'Sin contrato a largo plazo','info.2p':'2P incluye VoIP','info.3p':'3P incluye Video','info.fmc':'FMC: Double Bandwidth con móvil B2B activo',
+  'disc.rate':'Los precios reflejan el <strong>Rate Increase 2026</strong>. Aplica a clientes existentes en renovación o actualización de servicio.',
+  'disc.lto.warn':'Si el cliente <strong>no renueva contrato</strong> al precio de Lead Offer, su costo mensual se actualizará automáticamente al <strong>Precio de Lista</strong> del plan correspondiente.',
+  'disc.fmc.lto':'Para confirmar elegibilidad de la <strong>oferta FMC</strong>, consulta <strong>MyKnowledge en Salesforce</strong>.',
+  'disc.fmc.planes':'Para confirmar elegibilidad de <strong>FMC (Double Bandwidth)</strong>, consulta <strong>MyKnowledge en Salesforce</strong> antes de comprometer el beneficio con el cliente.',
+  'lto.listprice':'Precio Lista','lto.lead':'Lead Offer','lto.fmc':'FMC',
+  's.hsd':'1P HSD — Precio Especial','s.hsd.sub':'Solo internet, sin voz ni video',
+  's.hw':'Hardware & Seguridad','s.mgd':'Servicios Administrados',
+  's.addons.inet':'Add-ons Internet & Voz','s.voice':'Voz — 1P Voice',
+  's.vid1p':'Video — Paquetes Standalone (1P)','s.vid2p':'Video — Bundle 2P','s.vid2p.sub':'Precio del video cuando se combina con HSD (mín. 10/1)',
+  's.stb':'Video — Equipos (STB)','s.stb.note':'* Cada 7mo STB es gratis',
+  's.outlet':'Video — Outlets Adicionales','s.canal':'Video — Canal Especial',
+  's.ultaddons':'Video — Ultimate Add-ons','s.ultaddons.sub':'Requieren paquete Ultimate activo',
+  's.rules':'Reglas de Negocio Clave',
+  'leg.list':'Precio Lista (si no renueva)','leg.lead':'Lead Offer (requiere contrato)','leg.fmc':'FMC — con móvil B2B activo',
+  'voice.first':'Primera Línea','voice.first.sub':'Línea telefónica principal',
+  'voice.add':'Línea Adicional','voice.add.sub':'Cada línea extra',
+  'stb.1':'Incluido',
+  'prop.info':'Información del Cliente','prop.customer':'Nombre del Cliente','prop.account':'Número de Cuenta',
+  'prop.rep':'Vendedor','prop.date':'Fecha',
+  'prop.plan':'Seleccionar Plan','prop.tech':'Tecnología','prop.speed':'Velocidad',
+  'prop.bundle':'Bundle','prop.pricetype':'Tipo de Precio',
+  'prop.addplan':'+ Agregar al Carrito',
+  'prop.extras.addons':'Add-ons','prop.extras.voice':'Voz','prop.extras.video':'Video / STB','prop.extras.hw':'Hardware & Servicios',
+  'prop.summary':'Carrito','prop.total':'Total Mensual Est.','prop.generate':'🖨️ Generar Propuesta',
+  'prop.clear':'Limpiar Carrito','prop.notes':'Notas adicionales para la propuesta...',
+  'prop.empty':'Carrito vacío','prop.sel.price':'Precio del Plan',
+  'prop.ptype.list':'Lista','prop.ptype.promo':'Promo','prop.ptype.lto-lead':'LTO Lead','prop.ptype.lto-fmc':'LTO FMC',
+  'pv.proposal':'Propuesta de Servicios','pv.services':'Servicios Seleccionados',
+  'pv.plan':'Plan','pv.description':'Descripción','pv.monthly':'Mensual',
+  'pv.total':'Total Mensual Estimado','pv.notes':'Notas',
+  'pv.disc':'Precios sujetos a cambios sin previo aviso. Impuestos y cargos regulatorios no incluidos. Esta propuesta tiene validez de 30 días.',
+  'pv.sig.client':'Firma del Cliente','pv.sig.rep':'Firma del Representante',
+  'promo.penalty':'💰 Pago de Penalidad — Competidores','promo.referral':'👥 Referidos de Clientes',
+  'promo.p1':'Requiere evidencia de cargo de terminación del competidor <strong>(factura)</strong>',
+  'promo.p2':'El cliente debe activar un servicio equivalente al servicio activo bajo el competidor',
+  'promo.p3':'Aplica principio <strong>Equal to Equal RGU</strong> — reemplazo igual en tipo de servicio',
+  'promo.r1':'Aplicable únicamente para referidos de clientes <strong>nuevos</strong>',
+  'promo.r2':'El cliente referido debe permanecer activo por un mínimo de <strong>90 días</strong>',
+ },
+ en:{
+  'tab.guide':'📖 How to Use','tab.planes':'📶 Plans','tab.lto':'⚡ Limited Time Offer',
+  'tab.especiales':'🌟 Specials','tab.addons':'➕ Add-ons','tab.promos':'🎁 Promotions','tab.proposal':'🧾 Proposal',
+  'ctrl.tech':'Technology','ctrl.price':'Price','btn.list':'List','btn.promo':'Promo',
+  'b1p-data':'1P Data (HSD)','b1p-voice':'1P Voice','b2p':'2P HSD + VoIP',
+  'b3p-broadcast':'3P Broadcast','b3p-esp':'3P Español / EDP','b3p-ult':'3P Ultimate',
+  'info.nocontract':'No long-term contract','info.2p':'2P includes VoIP','info.3p':'3P includes Video','info.fmc':'FMC: Double Bandwidth with active B2B mobile',
+  'disc.rate':'Prices reflect the <strong>2026 Rate Increase</strong>. Applies to existing customers on renewal or service update.',
+  'disc.lto.warn':'If the customer <strong>does not renew</strong> at the Lead Offer price, their monthly cost will automatically update to the <strong>List Price</strong> of the corresponding plan.',
+  'disc.fmc.lto':'To confirm <strong>FMC offer eligibility</strong>, check <strong>MyKnowledge in Salesforce</strong>.',
+  'disc.fmc.planes':'To confirm <strong>FMC (Double Bandwidth)</strong> eligibility, check <strong>MyKnowledge in Salesforce</strong> before committing to the customer.',
+  'lto.listprice':'List Price','lto.lead':'Lead Offer','lto.fmc':'FMC',
+  's.hsd':'1P HSD — Special Pricing','s.hsd.sub':'Internet only, no voice or video',
+  's.hw':'Hardware & Security','s.mgd':'Managed Services',
+  's.addons.inet':'Internet & Voice Add-ons','s.voice':'Voice — 1P Voice',
+  's.vid1p':'Video — Standalone Packages (1P)','s.vid2p':'Video — 2P Bundle','s.vid2p.sub':'Video price when bundled with HSD (min. 10/1)',
+  's.stb':'Video — STB Equipment','s.stb.note':'* Every 7th STB is free',
+  's.outlet':'Video — Additional Outlets','s.canal':'Video — Special Channel',
+  's.ultaddons':'Video — Ultimate Add-ons','s.ultaddons.sub':'Require active Ultimate package',
+  's.rules':'Key Business Rules',
+  'leg.list':'List Price (if no renewal)','leg.lead':'Lead Offer (requires contract)','leg.fmc':'FMC — with active B2B mobile',
+  'voice.first':'First Line','voice.first.sub':'Main telephone line',
+  'voice.add':'Additional Line','voice.add.sub':'Each extra line',
+  'stb.1':'Included',
+  'prop.info':'Customer Information','prop.customer':'Customer Name','prop.account':'Account Number',
+  'prop.rep':'Sales Rep','prop.date':'Date',
+  'prop.plan':'Select Plan','prop.tech':'Technology','prop.speed':'Speed',
+  'prop.bundle':'Bundle','prop.pricetype':'Price Type',
+  'prop.addplan':'+ Add to Cart',
+  'prop.extras.addons':'Add-ons','prop.extras.voice':'Voice','prop.extras.video':'Video / STB','prop.extras.hw':'Hardware & Services',
+  'prop.summary':'Cart','prop.total':'Est. Monthly Total','prop.generate':'🖨️ Generate Proposal',
+  'prop.clear':'Clear Cart','prop.notes':'Additional notes for the proposal...',
+  'prop.empty':'Cart is empty','prop.sel.price':'Plan Price',
+  'prop.ptype.list':'List','prop.ptype.promo':'Promo','prop.ptype.lto-lead':'LTO Lead','prop.ptype.lto-fmc':'LTO FMC',
+  'pv.proposal':'Service Proposal','pv.services':'Selected Services',
+  'pv.plan':'Plan','pv.description':'Description','pv.monthly':'Monthly',
+  'pv.total':'Estimated Monthly Total','pv.notes':'Notes',
+  'pv.disc':'Prices subject to change without notice. Taxes and regulatory fees not included. This proposal is valid for 30 days.',
+  'pv.sig.client':'Customer Signature','pv.sig.rep':'Representative Signature',
+  'promo.penalty':'💰 Competitor Penalty Payment','promo.referral':'👥 Customer Referrals',
+  'promo.p1':'Requires evidence of competitor termination fee <strong>(invoice)</strong>',
+  'promo.p2':'Customer must activate a service equivalent to their active service with the competitor',
+  'promo.p3':'Apply <strong>Equal to Equal RGU</strong> principle — replacement must match service type',
+  'promo.r1':'Applicable only for referrals of <strong>new customers</strong>',
+  'promo.r2':'Referred customer must remain active for a minimum of <strong>90 days</strong>',
+ }
+};
+function t(k){ return T[lang][k]||T.es[k]||k; }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════════════════
+const COAX=[
+ {tier:'Retention', speed:'50/5',     fmc:null,    tech:'COAX',
+  list:{p1:61.99,  p2:66.99,  p3b:85.49, p3e:null,   p3u:null  },
+  promo:{p1:null,  p2:null,   p3b:null,  p3e:null,   p3u:null  }},
+ {tier:'Retention', speed:'150/30',   fmc:'300/30',tech:'COAX',
+  list:{p1:91.99,  p2:96.99,  p3b:null,  p3e:123.49, p3u:171.49},
+  promo:{p1:71.99, p2:76.99,  p3b:null,  p3e:101.49, p3u:149.49}},
+ {tier:'Retention', speed:'350/30',   fmc:'700/30',tech:'COAX',
+  list:{p1:128.99, p2:136.99, p3b:null,  p3e:163.49, p3u:211.49},
+  promo:{p1:108.99,p2:116.99, p3b:null,  p3e:141.49, p3u:189.49}},
+ {tier:'Retention', speed:'400/30',   fmc:null,    tech:'COAX',
+  list:{p1:178.99, p2:186.99, p3b:null,  p3e:213.49, p3u:261.49},
+  promo:{p1:null,  p2:null,   p3b:null,  p3e:null,   p3u:null  }},
+ {tier:'Retention', speed:'600/30',   fmc:'1G/30', tech:'COAX',
+  list:{p1:276.99, p2:286.99, p3b:null,  p3e:313.49, p3u:361.49},
+  promo:{p1:160.99,p2:170.99, p3b:null,  p3e:197.49, p3u:245.49}},
+ {tier:'Docsis3.1', speed:'1G/30',    fmc:null,    tech:'D3.1',
+  list:{p1:356.99, p2:366.99, p3b:null,  p3e:393.49, p3u:441.49},
+  promo:{p1:null,  p2:null,   p3b:null,  p3e:null,   p3u:null  }}
+];
+const FTTX=[
+ {tier:'Retention', speed:'50/50',    fmc:null,      tech:'FTTx',
+  list:{p1:61.99,  p2:66.99,  p3b:85.49, p3e:null,   p3u:null  },
+  promo:{p1:null,  p2:null,   p3b:null,  p3e:null,   p3u:null  }},
+ {tier:'Retention', speed:'150/150',  fmc:'300/300', tech:'FTTx',
+  list:{p1:91.99,  p2:96.99,  p3b:null,  p3e:123.49, p3u:171.49},
+  promo:{p1:71.99, p2:76.99,  p3b:null,  p3e:101.49, p3u:149.49}},
+ {tier:'Retention', speed:'350/350',  fmc:'700/700', tech:'FTTx',
+  list:{p1:128.99, p2:136.99, p3b:null,  p3e:163.49, p3u:211.49},
+  promo:{p1:108.99,p2:116.99, p3b:null,  p3e:141.49, p3u:189.49}},
+ {tier:'Retention', speed:'400/400',  fmc:null,      tech:'FTTx',
+  list:{p1:178.99, p2:186.99, p3b:null,  p3e:213.49, p3u:261.49},
+  promo:{p1:null,  p2:null,   p3b:null,  p3e:null,   p3u:null  }},
+ {tier:'Retention', speed:'600/600',  fmc:'1G/1G',   tech:'FTTx',
+  list:{p1:276.99, p2:286.99, p3b:null,  p3e:313.49, p3u:361.49},
+  promo:{p1:160.99,p2:170.99, p3b:null,  p3e:197.49, p3u:245.49}},
+ {tier:'Retention', speed:'1G/1G',    fmc:null,      tech:'FTTx',
+  list:{p1:356.99, p2:366.99, p3b:null,  p3e:393.49, p3u:441.49},
+  promo:{p1:null,  p2:null,   p3b:null,  p3e:null,   p3u:null  }},
+ {tier:'Retention', speed:'1.5G/1.5G',fmc:null,      tech:'FTTx15',
+  list:{p1:401.99, p2:431.99, p3b:null,  p3e:438.99, p3u:499.99},
+  promo:null}
+];
+const FMC_PLANS=[
+ ...COAX.filter(p=>p.fmc).map(p=>({...p,displaySpeed:p.fmc,baseSpeed:p.speed,tech:'FMC',sourceTech:p.tech==='D3.1'?'COAX D3.1':'COAX'})),
+ ...FTTX.filter(p=>p.fmc).map(p=>({...p,displaySpeed:p.fmc,baseSpeed:p.speed,tech:'FMC',sourceTech:'FTTx'}))
+];
+const COAX_LTO=[
+ {speed:'100/10', tech:'',         l2p:138.99,l3p:null,  ld2p:57.99,ld3p:null, f2p:52.99,f3p:null },
+ {speed:'300/30', tech:'',         l2p:183.99,l3p:null,  ld2p:82.99,ld3p:null, f2p:57.99,f3p:null },
+ {speed:'500/30', tech:'',         l2p:296.99,l3p:151.49,ld2p:67.99,ld3p:74.49,f2p:60.99,f3p:74.49},
+ {speed:'1G/30',  tech:'Docsis3.1',l2p:366.99,l3p:391.49,ld2p:84.99,ld3p:79.49,f2p:62.99,f3p:79.49}
+];
+const FTTX_LTO=[
+ {speed:'100/100',l2p:138.99,l3p:null,  ld2p:57.99,ld3p:null, f2p:52.99,f3p:null },
+ {speed:'300/300',l2p:183.99,l3p:null,  ld2p:82.99,ld3p:null, f2p:57.99,f3p:null },
+ {speed:'500/500',l2p:296.99,l3p:151.49,ld2p:67.99,ld3p:74.49,f2p:60.99,f3p:74.49},
+ {speed:'1G/1G',  l2p:366.99,l3p:391.49,ld2p:84.99,ld3p:79.49,f2p:62.99,f3p:79.49}
+];
+const ADDONS=[
+ {id:'ao1',name:'Liberty Business Ongoing',sub:'Any HSD Plan',price:20.00,lto:9.99 },
+ {id:'ao2',name:'Hunting',                 sub:'Any VoIP Plan',price:25.00,lto:null},
+ {id:'ao3',name:'IP Static',               sub:'Any HSD Plan', price:40.00,lto:null},
+ {id:'ao4',name:'Antivirus',               sub:'Any Bundle',   price:9.99, lto:null},
+ {id:'ao5',name:'Nube (Storage)',          sub:'Any Bundle',   price:15.99,lto:null},
+ {id:'ao6',name:'Tienda Online',           sub:'Any Bundle',   price:15.99,lto:null},
+ {id:'ao7',name:'Voicemail',              sub:'Any VoIP Plan',price:4.99, lto:null}
+];
+const VIDEO_1P=[
+ {id:'v1',name:'Broadcast',          price:20.00},
+ {id:'v2',name:'Español De Primera', price:43.99},
+ {id:'v3',name:'Ultimate',           price:86.99}
+];
+const ULT_ADDONS=[
+ {id:'u1',name:'Ultimate News & Education',price:3.99},
+ {id:'u2',name:'Ultimate Spanish',         price:4.99},
+ {id:'u3',name:'Ultimate Kids',            price:2.99},
+ {id:'u4',name:'Ultimate Sports',          price:4.99},
+ {id:'u5',name:'Ultimate Movies',          price:4.99},
+ {id:'u6',name:'Ultimate Plus',            price:14.99}
+];
+const HARDWARE=[
+ {id:'hw1',name:'Forti Wifi30G', sub:'Seguridad WiFi / WiFi Security', price:28.25},
+ {id:'hw2',name:'FEX-101F',      sub:'Switch / Network Extension',     price:11.75},
+ {id:'hw3',name:'Managed WAN',   sub:'Managed WAN Service',            price:45.00},
+ {id:'hw4',name:'Managed MSS',   sub:'Managed Security Service',       price:22.00},
+ {id:'hw5',name:'IP Static',     sub:'Any HSD Plan',                   price:20.00}
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════
+let lang='es', curTech='coax', curPrice='list', curLto='coax', curTab='guide';
+let J={step:1,tech:null,speed:null,bundle:null,ptype:'list',price:null,addons:{}};
+let jCust={name:'',account:'',rep:'',date:new Date().toISOString().split('T')[0],notes:''};
+const TABS=['guide','planes','lto','especiales','addons','promos','proposal'];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+const fmt=v=>v==null?null:'$'+v.toFixed(2);
+function pCell(v,cls){return v==null?`<span class="c-na">—</span>`:`<span class="${cls||'c-list'}">${fmt(v)}</span>`;}
+function prRow(label,val,hi){
+  const cls=hi?'pr hi':'pr';
+  const d=val==null?`<span class="pr-val na">N/A</span>`:`<span class="pr-val">${fmt(val)}</span>`;
+  return `<div class="${cls}"><span class="pr-label">${label}</span>${d}</div>`;
+}
+function acCard(name,sub,price){
+  return `<div class="addon-card"><div><div class="ac-name">${name}</div><div class="ac-sub">${sub}</div></div><div style="text-align:right"><div class="ac-price">${fmt(price)}</div><div class="ac-mo">/mes</div></div></div>`;
+}
+function secHeader(label,cls){
+  return `<div class="sec-header"><div class="sec-header-line"></div><div class="sec-header-label ${cls}">${label}</div><div class="sec-header-line"></div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER NAV
+// ═══════════════════════════════════════════════════════════════════════════
+function renderNav(){
+  document.getElementById('tabs-nav').innerHTML=TABS.map(tab=>
+    `<button class="tab-btn${tab===curTab?' active':''}" onclick="showTab('${tab}',this)">${t('tab.'+tab)}</button>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER: HOW-TO
+// ═══════════════════════════════════════════════════════════════════════════
+function renderGuide(){
+  const es=lang==='es';
+  const cards=[
+    {icon:'📶',cls:'hi-blue',
+     title:es?'Tab: Planes Regulares':'Tab: Regular Plans',
+     body:es?`Catálogo base de precios por tecnología. Alterna entre <strong>COAX</strong>, <strong>FTTx</strong> y <strong>FMC</strong>, y entre precio <strong>Lista</strong> y <strong>Promo</strong>. Los planes 1P pueden ser <strong>Data (HSD)</strong> o <strong>Voz</strong> como producto único.`
+           :`Base price catalog by technology. Toggle between <strong>COAX</strong>, <strong>FTTx</strong>, and <strong>FMC</strong>, and between <strong>List</strong> and <strong>Promo</strong> pricing. 1P plans can be either <strong>Data (HSD)</strong> or <strong>Voice</strong> as a standalone product.`},
+    {icon:'🔗',cls:'hi-purple',
+     title:es?'FMC — Double Bandwidth':'FMC — Double Bandwidth',
+     body:es?`El cliente debe tener un <strong>servicio móvil B2B activo</strong> con Liberty para recibir el doble de velocidad sin costo adicional. Ejemplo: plan 150/30 → recibe <strong>300/30 Mbps</strong>. Verifica elegibilidad en <strong>MyKnowledge (Salesforce)</strong>.`
+           :`Customer must have an <strong>active B2B mobile service</strong> with Liberty to receive double bandwidth at no extra cost. Example: 150/30 plan → receives <strong>300/30 Mbps</strong>. Verify eligibility in <strong>MyKnowledge (Salesforce)</strong>.`},
+    {icon:'⚡',cls:'hi-orange',
+     title:es?'Tab: Oferta Limitada (LTO)':'Tab: Limited Time Offer (LTO)',
+     body:es?`Dos niveles de precio LTO: <strong>Lead Offer</strong> (requiere compromiso contractual) y <strong>FMC</strong> (cliente con móvil B2B). Solo cubre <strong>2P</strong> y <strong>3P ESP/EDP</strong>. Si no renueva, el precio sube al <strong>Precio de Lista</strong>.`
+           :`Two LTO price tiers: <strong>Lead Offer</strong> (requires contract commitment) and <strong>FMC</strong> (customer with B2B mobile). Only covers <strong>2P</strong> and <strong>3P ESP/EDP</strong>. If no renewal, price reverts to <strong>List Price</strong>.`},
+    {icon:'📦',cls:'hi-blue',
+     title:es?'Tipos de Bundle (1P / 2P / 3P)':'Bundle Types (1P / 2P / 3P)',
+     body:es?`<strong>1P Data</strong> — Solo HSD (internet).<br><strong>1P Voz</strong> — Solo servicio de voz ($34.99/línea).<br><strong>2P</strong> — HSD + VoIP.<br><strong>3P Broadcast</strong> — HSD + VoIP + Video Broadcast (velocidades de entrada).<br><strong>3P ESP/EDP</strong> — HSD + VoIP + Español De Primera.<br><strong>3P Ultimate</strong> — HSD + VoIP + Video Ultimate.`
+           :`<strong>1P Data</strong> — HSD only (internet).<br><strong>1P Voice</strong> — Voice service only ($34.99/line).<br><strong>2P</strong> — HSD + VoIP.<br><strong>3P Broadcast</strong> — HSD + VoIP + Broadcast Video (entry speeds).<br><strong>3P ESP/EDP</strong> — HSD + VoIP + Español De Primera.<br><strong>3P Ultimate</strong> — HSD + VoIP + Ultimate Video.`},
+    {icon:'🌟',cls:'hi-green',
+     title:es?'Tab: Especiales':'Tab: Specials',
+     body:es?`Precios especiales de <strong>1P HSD</strong> en velocidades 100/300/500/1G. También incluye <strong>hardware</strong> de red y seguridad (Forti Wifi30G, FEX-101F) y <strong>servicios administrados</strong> (Managed WAN, Managed MSS).`
+           :`Special <strong>1P HSD</strong> pricing at 100/300/500/1G speeds. Also includes networking and security <strong>hardware</strong> (Forti Wifi30G, FEX-101F) and <strong>managed services</strong> (Managed WAN, Managed MSS).`},
+    {icon:'🧾',cls:'hi-yellow',
+     title:es?'Tab: Cotización':'Tab: Proposal',
+     body:es?`Construye una propuesta completa: selecciona el plan, agrega add-ons y hardware, ingresa datos del cliente y vendedor, y genera una propuesta imprimible para presentar al cliente.`
+           :`Build a complete proposal: select the plan, add add-ons and hardware, enter customer and rep info, then generate a printable proposal to present to the customer.`},
+  ];
+  const cardsHtml=cards.map(c=>`
+    <div class="how-card">
+      <div class="how-card-hdr"><div class="how-icon ${c.cls}">${c.icon}</div><div class="how-title">${c.title}</div></div>
+      <div class="how-body">${c.body}</div>
+    </div>`).join('');
+
+  const rules=[
+    {cls:'',   title:es?'📈 Rate Increase 2026':'📈 2026 Rate Increase',
+     body:es?'Los precios en <strong>Planes Regulares</strong> ya reflejan el aumento de tarifa del 2026 para clientes existentes. Usa esta tabla — no materiales anteriores.'
+           :'Prices in <strong>Regular Plans</strong> already reflect the 2026 rate increase for existing customers. Use this table — not prior materials.'},
+    {cls:'o',  title:es?'⚡ LTO — Compromiso Contractual':'⚡ LTO — Contract Commitment',
+     body:es?'Las LTO requieren renovación de contrato. Si el cliente no firma, su precio mensual sube automáticamente al <strong>Precio de Lista</strong>.'
+           :'LTO requires contract renewal. If the customer does not sign, their monthly price automatically increases to <strong>List Price</strong>.'},
+    {cls:'g',  title:es?'🔗 Elegibilidad FMC':'🔗 FMC Eligibility',
+     body:es?'Confirma elegibilidad del cliente en <strong>MyKnowledge en Salesforce</strong> antes de comprometer el beneficio FMC (Double Bandwidth o precio LTO FMC).'
+           :'Confirm customer eligibility in <strong>MyKnowledge in Salesforce</strong> before committing the FMC benefit (Double Bandwidth or LTO FMC pricing).'},
+    {cls:'p',  title:es?'📞 Penalidad — Equal to Equal':'📞 Penalty — Equal to Equal',
+     body:es?'Para la promo de penalidad, el cliente activa un servicio <strong>equivalente en tipo y RGU</strong> al del competidor. Se requiere factura con cargo de terminación.'
+           :'For the penalty promo, the customer activates a service <strong>equivalent in type and RGU</strong> to the competitor\'s. Invoice with termination charge required.'},
+  ];
+  const rulesHtml=rules.map(r=>`
+    <div class="rule-box ${r.cls}">
+      <div class="rule-title">${r.title}</div>
+      <div class="rule-body">${r.body}</div>
+    </div>`).join('');
+
+  document.getElementById('tab-guide').innerHTML=`
+    <div class="guide-hero">
+      <h1>${es?'Guía de Ventas Fijo — SOHO & SMB':'Fixed Services Sales Guide — SOHO & SMB'}</h1>
+      <p>${es?'Herramienta interna para representantes de Liberty Business. Encuentra precios, ofertas y reglas de negocio para servicios fijos.':'Internal tool for Liberty Business sales representatives. Find pricing, offers, and business rules for fixed services.'}</p>
+    </div>
+    <div class="how-grid">${cardsHtml}</div>
+    <div class="s-title">${t('s.rules')}</div>
+    ${rulesHtml}`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER: PLANS
+// ═══════════════════════════════════════════════════════════════════════════
+function renderPlans(){
+  const isFmc=curTech==='fmc', isPromo=curPrice==='promo';
+  const BADGE={COAX:'b-coax','D3.1':'b-d31',FTTx:'b-fttx',FTTx15:'b-fttx15',FMC:'b-fmc'};
+  const CARD ={COAX:'t-coax','D3.1':'t-d31',FTTx:'t-fttx',FTTx15:'t-fttx15',FMC:'t-fmc'};
+  const BLBL ={COAX:'COAX','D3.1':'Docsis 3.1',FTTx:'FTTx',FTTx15:'FTTx 1.5G',FMC:'FMC'};
+
+  const buildCard=(p,speed,showBase)=>{
+    const prices=isPromo&&p.promo?p.promo:p.list;
+    const noPromo=isPromo&&!p.promo;
+    const tk=p.tech;
+    const p3lbl=(tk==='FTTx'||tk==='FTTx15'||p.sourceTech==='FTTx')?t('b3p-esp').replace('ESP','EDP'):t('b3p-esp');
+    const baseLine=showBase?`<span style="font-size:11px;color:var(--muted)">Base: ${p.baseSpeed} (${p.sourceTech})</span>`:'';
+    const fmcBadge=(!isFmc&&p.fmc)?`<span class="badge b-double">FMC→${p.fmc}</span>`:'';
+    return `
+      <div class="plan-card ${CARD[tk]||'t-coax'}">
+        <div class="plan-speed">${speed} <small>Mbps</small></div>
+        <div class="plan-meta"><span class="badge ${BADGE[tk]||'b-coax'}">${BLBL[tk]||tk}</span>${fmcBadge}${baseLine}</div>
+        ${noPromo
+          ?`<div class="na-row">${lang==='es'?'Promo no disponible':'Promo not available'}</div>`
+          :`<div class="price-rows">
+              ${prRow(t('b1p-data'),prices.p1,true)}
+              ${prRow(t('b2p'),prices.p2)}
+              ${prices.p3b!=null?prRow(t('b3p-broadcast'),prices.p3b):''}
+              ${prRow(p3lbl,prices.p3e)}
+              ${prRow(t('b3p-ult'),prices.p3u)}
+            </div>`
+        }
+      </div>`;
+  };
+
+  let html='';
+  if(isFmc){
+    const coaxFmc=FMC_PLANS.filter(p=>p.sourceTech.includes('COAX'));
+    const fttxFmc=FMC_PLANS.filter(p=>p.sourceTech==='FTTx');
+    if(coaxFmc.length){ html+=secHeader('🔗 FMC — COAX (Double Bandwidth)','sec-fmc')+'<div class="plan-grid">'+coaxFmc.map(p=>buildCard(p,p.displaySpeed,true)).join('')+'</div>'; }
+    if(fttxFmc.length){ html+=secHeader('🔗 FMC — FTTx (Double Bandwidth)','sec-fmc')+'<div class="plan-grid">'+fttxFmc.map(p=>buildCard(p,p.displaySpeed,true)).join('')+'</div>'; }
+  } else {
+    const plans=curTech==='coax'?COAX:FTTX;
+    html='<div class="plan-grid">'+plans.map(p=>buildCard(p,p.speed,false)).join('')+'</div>';
+  }
+
+  const fmcDiscHtml=isFmc?`<div class="disc disc-purple" style="margin-top:18px"><span class="di">🔗</span><span>${t('disc.fmc.planes')}</span></div>`:'';
+
+  document.getElementById('tab-planes').innerHTML=`
+    <div class="controls">
+      <span class="ctrl-label">${t('ctrl.tech')}</span>
+      <button class="pill${curTech==='coax'?' on':''}"    id="p-coax"  onclick="setTech('coax',this)">COAX</button>
+      <button class="pill${curTech==='fttx'?' on':''}"    id="p-fttx"  onclick="setTech('fttx',this)">FTTx</button>
+      <button class="pill${curTech==='fmc'?' on-fmc':''}" id="p-fmc"   onclick="setTech('fmc',this)" style="${curTech!=='fmc'?'border-color:#7c3aed;color:#7c3aed':''}">🔗 FMC</button>
+      <div class="ctrl-sep"></div>
+      <span class="ctrl-label">${t('ctrl.price')}</span>
+      <button class="pill${curPrice==='list'?' on':''}"  id="p-list"  onclick="setPriceType('list',this)">${t('btn.list')}</button>
+      <button class="pill${curPrice==='promo'?' on':''}" id="p-promo" onclick="setPriceType('promo',this)">${t('btn.promo')}</button>
+    </div>
+    <div class="info-bar">
+      <span>${t('info.nocontract')}</span><span>${t('info.2p')}</span>
+      <span>${t('info.3p')}</span><span>${t('info.fmc')}</span>
+    </div>
+    <div class="disc disc-info"><span class="di">ℹ️</span><span>${t('disc.rate')}</span></div>
+    ${html}
+    ${fmcDiscHtml}`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER: LTO
+// ═══════════════════════════════════════════════════════════════════════════
+function renderLto(){
+  const data=curLto==='coax'?COAX_LTO:FTTX_LTO;
+  const l3=curLto==='coax'?'3P ESP':'3P EDP';
+  const rows=data.map(r=>{
+    const tech=r.tech?`<span class="badge b-d31" style="margin-left:5px;font-size:10px">${r.tech}</span>`:'';
+    return `<tr>
+      <td><strong>${r.speed}</strong>${tech}</td>
+      <td>${pCell(r.l2p,'c-list')}</td><td>${pCell(r.l3p,'c-list')}</td>
+      <td>${pCell(r.ld2p,'c-lead')}</td><td>${pCell(r.ld3p,'c-lead')}</td>
+      <td>${pCell(r.f2p,'c-fmc')}</td><td>${pCell(r.f3p,'c-fmc')}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('tab-lto').innerHTML=`
+    <div class="controls">
+      <span class="ctrl-label">${t('ctrl.tech')}</span>
+      <button class="pill${curLto==='coax'?' on':''}" id="lto-coax" onclick="setLtoTech('coax',this)">COAX</button>
+      <button class="pill${curLto==='fttx'?' on':''}" id="lto-fttx" onclick="setLtoTech('fttx',this)">FTTx</button>
+    </div>
+    <div class="disc disc-warn"><span class="di">⚠️</span><span>${t('disc.lto.warn')}</span></div>
+    <div class="disc disc-purple"><span class="di">🔗</span><span>${t('disc.fmc.lto')}</span></div>
+    <div class="tbl-wrap"><table>
+      <thead>
+        <tr>
+          <th>${lang==='es'?'Velocidad':'Speed'}</th>
+          <th colspan="2" style="background:#4b5563">${t('lto.listprice')}</th>
+          <th colspan="2" style="background:var(--orange)">${t('lto.lead')}</th>
+          <th colspan="2" style="background:#5b21b6">${t('lto.fmc')}</th>
+        </tr>
+        <tr class="thead-sub">
+          <th></th>
+          <th style="background:#6b7280">2P HSD+VoIP</th><th style="background:#6b7280">${l3}</th>
+          <th style="background:#c2410c">2P HSD+VoIP</th><th style="background:#c2410c">${l3}</th>
+          <th style="background:#4c1d95">2P HSD+VoIP</th><th style="background:#4c1d95">${l3}</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#6b7280"></div>${t('leg.list')}</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>${t('leg.lead')}</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5b21b6"></div>${t('leg.fmc')}</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER: ESPECIALES
+// ═══════════════════════════════════════════════════════════════════════════
+function renderSpeciales(){
+  const hsd=[{s:'100',p:52.99},{s:'300',p:57.99},{s:'500',p:60.99},{s:'1G',p:62.99}];
+  document.getElementById('tab-especiales').innerHTML=`
+    <div class="s-title">${t('s.hsd')}</div><p class="s-sub">${t('s.hsd.sub')}</p>
+    <div class="special-grid">${hsd.map(h=>`<div class="special-card"><div class="sc-speed">${h.s} <small>Mbps</small></div><div class="sc-price">${fmt(h.p)}</div><div class="sc-mo">/mes</div></div>`).join('')}</div>
+    <div class="divider"></div>
+    <div class="s-title">${t('s.hw')}</div>
+    <div class="card-grid">
+      ${acCard('Forti Wifi30G',lang==='es'?'Seguridad WiFi administrada':'Managed WiFi Security',28.25)}
+      ${acCard('FEX-101F',lang==='es'?'Switch / Extensión de red':'Switch / Network Extension',11.75)}
+      ${acCard('IP Static','Any HSD Plan',20.00)}
+    </div>
+    <div class="divider"></div>
+    <div class="s-title">${t('s.mgd')}</div>
+    <div class="card-grid">
+      ${acCard('Managed WAN',lang==='es'?'WAN administrado':'Managed WAN',45.00)}
+      ${acCard('Managed MSS',lang==='es'?'Seguridad administrada':'Managed Security',22.00)}
+      ${acCard('Liberty Business Ongoing','Any HSD Plan',20.00)}
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER: ADD-ONS
+// ═══════════════════════════════════════════════════════════════════════════
+function renderAddons(){
+  const addonsHtml=ADDONS.map(a=>{
+    const tag=a.lto?`<span class="tag-lto">LTO ${fmt(a.lto)}</span>`:'';
+    return acCard(a.name+tag,a.sub,a.price);
+  }).join('');
+  document.getElementById('tab-addons').innerHTML=`
+    <div class="s-title">${t('s.addons.inet')}</div>
+    <div class="card-grid">${addonsHtml}</div>
+    <div class="divider"></div>
+    <div class="s-title">${t('s.voice')}</div>
+    <div class="card-grid">
+      ${acCard(t('voice.first'),t('voice.first.sub'),34.99)}
+      ${acCard(t('voice.add'),t('voice.add.sub'),29.99)}
+    </div>
+    <div class="divider"></div>
+    <div class="s-title">${t('s.vid1p')}</div>
+    <div class="card-grid">${VIDEO_1P.map(v=>acCard(v.name,lang==='es'?'Paquete standalone 1P':'Standalone 1P Package',v.price)).join('')}</div>
+    <div class="divider"></div>
+    <div class="s-title">${t('s.vid2p')}</div><p class="s-sub">${t('s.vid2p.sub')}</p>
+    <div class="card-grid">
+      ${acCard('Español De Primera',lang==='es'?'Con HSD ≥ 10/1':'With HSD ≥ 10/1',67.49)}
+      ${acCard('Ultimate',lang==='es'?'Con HSD ≥ 10/1':'With HSD ≥ 10/1',111.49)}
+    </div>
+    <div class="divider"></div>
+    <div class="s-title">${t('s.stb')}</div>
+    <div class="stb-grid">
+      <div class="stb-card"><div class="stb-lbl">${lang==='es'?'1er Equipo':'1st Unit'}</div><div class="stb-price free">${t('stb.1')}</div></div>
+      <div class="stb-card"><div class="stb-lbl">${lang==='es'?'2do Equipo':'2nd Unit'}</div><div class="stb-price">$6.99</div></div>
+      <div class="stb-card"><div class="stb-lbl">${lang==='es'?'3er Equipo':'3rd Unit'}</div><div class="stb-price">$5.49</div></div>
+      <div class="stb-card"><div class="stb-lbl">${lang==='es'?'4to+ Equipo':'4th+ Unit'}</div><div class="stb-price">$3.99</div></div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:22px">${t('s.stb.note')}</p>
+    <div class="divider"></div>
+    <div class="s-title">${t('s.outlet')}</div>
+    <div class="card-grid">
+      ${acCard('Español De Primera',lang==='es'?'Outlet adicional (c/7mo gratis)':'Additional outlet (every 7th free)',29.99)}
+      ${acCard('Ultimate',lang==='es'?'Outlet adicional (c/7mo gratis)':'Additional outlet (every 7th free)',65.99)}
+    </div>
+    <div class="divider"></div>
+    <div class="s-title">${t('s.canal')}</div>
+    <div class="card-grid">${acCard('Fox Deportes',lang==='es'?'Canal individual':'Individual channel',25.00)}</div>
+    <div class="divider"></div>
+    <div class="s-title">${t('s.ultaddons')}</div><p class="s-sub">${t('s.ultaddons.sub')}</p>
+    <div class="card-grid">${ULT_ADDONS.map(u=>acCard(u.name,lang==='es'?'Requiere Ultimate':'Requires Ultimate',u.price)).join('')}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER: PROMOS
+// ═══════════════════════════════════════════════════════════════════════════
+function renderPromos(){
+  document.getElementById('tab-promos').innerHTML=`
+    <div class="promo-card">
+      <div class="promo-title">${t('promo.penalty')}</div>
+      <ul class="promo-rules">
+        <li>${t('promo.p1')}</li><li>${t('promo.p2')}</li><li>${t('promo.p3')}</li>
+      </ul>
+    </div>
+    <div class="promo-card">
+      <div class="promo-title">${t('promo.referral')}</div>
+      <ul class="promo-rules">
+        <li>${t('promo.r1')}</li><li>${t('promo.r2')}</li>
+      </ul>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PRICE LOOKUP
+// ═══════════════════════════════════════════════════════════════════════════
+function lookupPrice(tech,speed,bundle,ptype){
+  if(bundle==='1p-voice') return 34.99;
+  let plan;
+  if(tech==='coax') plan=COAX.find(p=>p.speed===speed);
+  else if(tech==='fttx') plan=FTTX.find(p=>p.speed===speed);
+  else if(tech==='fmc') plan=FMC_PLANS.find(p=>p.displaySpeed===speed);
+  if(!plan) return null;
+  if(ptype==='lto-lead'||ptype==='lto-fmc'){
+    const ltoData=(tech==='coax')?COAX_LTO:(tech==='fttx')?FTTX_LTO:null;
+    if(!ltoData) return null;
+    const ltoRow=ltoData.find(r=>r.speed===(tech==='fmc'?plan.baseSpeed:speed));
+    if(!ltoRow) return null;
+    const isLead=ptype==='lto-lead';
+    if(bundle==='2p') return isLead?ltoRow.ld2p:ltoRow.f2p;
+    if(bundle==='3p-esp') return isLead?ltoRow.ld3p:ltoRow.f3p;
+    return null;
+  }
+  const prices=(ptype==='promo'&&plan.promo)?plan.promo:plan.list;
+  if(!prices) return null;
+  switch(bundle){
+    case '1p-data': return prices.p1;
+    case '2p':      return prices.p2;
+    case '3p-broadcast': return prices.p3b;
+    case '3p-esp':  return prices.p3e;
+    case '3p-ult':  return prices.p3u;
+    default: return null;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER: PROPOSAL
+// ═══════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+// JOURNEY — PROPOSAL TAB
+// ═══════════════════════════════════════════════════════════════════════════
+function jSave(){
+  const g=id=>document.getElementById(id)?.value||'';
+  if(document.getElementById('jc-name')){jCust.name=g('jc-name');jCust.account=g('jc-acct');jCust.rep=g('jc-rep');jCust.date=g('jc-date');jCust.notes=g('jc-notes');}
+}
+function jBack(s){jSave();if(s<=1){J.tech=null;J.speed=null;J.bundle=null;J.ptype='list';J.price=null;J.addons={};}if(s<=2){J.speed=null;J.bundle=null;J.ptype='list';J.price=null;J.addons={};}if(s<=3){J.bundle=null;J.ptype='list';J.price=null;J.addons={};}if(s<=4){J.ptype='list';J.price=null;J.addons={};}if(s<=5){J.addons={};}J.step=s;renderProposal();}
+function jSelTech(v){J.tech=v;J.speed=null;J.bundle=null;J.ptype='list';J.price=null;J.addons={};J.step=2;renderProposal();}
+function jSelSpeed(v){J.speed=v;J.bundle=null;J.ptype='list';J.price=null;J.addons={};J.step=3;renderProposal();}
+function jSelBundle(v){J.bundle=v;J.ptype='list';J.price=lookupPrice(J.tech,J.speed,v,'list');J.addons={};J.step=4;renderProposal();}
+function jSelPtype(v){J.ptype=v;J.price=lookupPrice(J.tech,J.speed,J.bundle,v);J.step=5;renderProposal();}
+function jReset(){J={step:1,tech:null,speed:null,bundle:null,ptype:'list',price:null,addons:{}};jCust={name:'',account:'',rep:'',date:new Date().toISOString().split('T')[0],notes:''};renderProposal();}
+function jToggle(id,name,price){if(J.addons[id])delete J.addons[id];else J.addons[id]={name,price,qty:1};jUpdateSum();}
+function jQty(id,name,price,val){const q=parseInt(val)||0;if(q<=0)delete J.addons[id];else J.addons[id]={name:`${name} × ${q}`,price:price*q,qty:q};jUpdateSum();}
+function jUpdateSum(){const el=document.getElementById('jsum-inner');if(el)el.innerHTML=jSumHtml();jBadge();}
+function jBadge(){const tab=document.querySelector('[data-tab="proposal"]');if(!tab)return;const n=(J.price?1:0)+Object.keys(J.addons).length;const base=t('tab.proposal');tab.innerHTML=n>0?`${base} <span style="background:var(--orange);color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:800;margin-left:4px">${n}</span>`:base;}
+
+// ── STEP BAR ──
+function jBar(){
+  const es=lang==='es';
+  const ss=[{n:1,e:'Tecnología',en:'Tech'},{n:2,e:'Velocidad',en:'Speed'},{n:3,e:'Servicio',en:'Service'},{n:4,e:'Precio',en:'Price'},{n:5,e:'Add-ons',en:'Add-ons'},{n:6,e:'Resumen',en:'Summary'}];
+  return `<div class="jstepbar">${ss.map((s,i)=>{const cls=s.n<J.step?'done':s.n===J.step?'active':'pending';return `<div class="jsi ${cls}"${cls==='done'?` onclick="jBack(${s.n})"`:''}><div class="jsi-n">${cls==='done'?'✓':s.n}</div><div class="jsi-l">${es?s.e:s.en}</div></div>${i<ss.length-1?'<div class="jsep"></div>':''}`}).join('')}</div>`;
+}
+
+// ── STEP 1: TECHNOLOGY ──
+function jP1(){
+  const es=lang==='es';
+  if(J.step>1)return `<div class="jpanel done" onclick="jBack(1)"><div class="jpanel-done-hdr"><div class="jpanel-chk">✓</div><div class="jpanel-done-ttl">${es?'Tecnología':'Technology'}</div><div class="jpanel-done-val">{{J.tech?.toUpperCase()}}</div><div class="jpanel-chng">${es?'Cambiar':'Change'}</div></div></div>`.replace('{{J.tech?.toUpperCase()}}',{coax:'COAX',fttx:'FTTx',fmc:'FMC'}[J.tech]||'');
+  const techs=[
+    {v:'coax',icon:'📡',bc:'jcb-bl',sub:es?'Red coaxial · Docsis 3.0/3.1':'Coaxial cable · Docsis 3.0/3.1',range:'50/5 → 1G/30 Mbps'},
+    {v:'fttx',icon:'🔷',bc:'jcb-gr',sub:es?'Fibra óptica hasta el local':'Fiber optic to premises',range:'50/50 → 1.5G/1.5G Mbps'},
+    {v:'fmc', icon:'🔗',bc:'jcb-pu',sub:es?'Double Bandwidth · Requiere móvil B2B':'Double Bandwidth · Requires B2B mobile',range:'300/30 → 1G/1G Mbps'},
+  ];
+  return `<div class="jpanel"><div class="jpanel-hdr"><div class="jpanel-sn">${es?'Paso 1 de 6':'Step 1 of 6'}</div><div class="jpanel-st">${es?'¿Qué tecnología tiene el cliente?':'What technology does the customer have?'}</div></div><div class="jpanel-body"><div class="jcards c3">${techs.map(tc=>`<div class="jcard${J.tech===tc.v?' sel':''}" onclick="jSelTech('${tc.v}')"><div class="jc-icon">${tc.icon}</div><span class="jcbadge ${tc.bc}">${tc.v.toUpperCase()}</span><div class="jc-name">${tc.v==='fmc'?'FMC':tc.v.toUpperCase()}</div><div class="jc-sub">${tc.sub}</div><div class="jc-range">${tc.range}</div></div>`).join('')}</div></div></div>`;
+}
+
+// ── STEP 2: SPEED ──
+function jP2(){
+  const es=lang==='es';
+  if(J.step>2)return `<div class="jpanel done" onclick="jBack(2)"><div class="jpanel-done-hdr"><div class="jpanel-chk">✓</div><div class="jpanel-done-ttl">${es?'Velocidad':'Speed'}</div><div class="jpanel-done-val">${J.speed} Mbps${J.tech==='fmc'?' (FMC)':''}</div><div class="jpanel-chng">${es?'Cambiar':'Change'}</div></div></div>`;
+  const plans=J.tech==='coax'?COAX:J.tech==='fttx'?FTTX:FMC_PLANS;
+  const BC={COAX:'jcb-bl','D3.1':'jcb-or',FTTx:'jcb-gr',FTTx15:'jcb-pu',FMC:'jcb-pu'};
+  return `<div class="jpanel"><div class="jpanel-hdr"><div class="jpanel-sn">${es?'Paso 2 de 6':'Step 2 of 6'}</div><div class="jpanel-st">${es?'¿Qué velocidad necesita?':'What speed does the customer need?'}</div></div><div class="jpanel-body"><div class="jcards ca">${plans.map(p=>{const spd=J.tech==='fmc'?p.displaySpeed:p.speed;const mp=p.list?.p1;const fm=p.fmc?`<div style="font-size:10px;color:var(--green);font-weight:600;margin-top:2px">FMC→${p.fmc}</div>`:'';return `<div class="jcard${J.speed===spd?' sel':''}" onclick="jSelSpeed('${spd}')"><span class="jcbadge ${BC[p.tech]||'jcb-bl'}">${p.tech}</span><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800">${spd} <small style="font-size:12px;color:var(--muted);font-weight:600">Mbps</small></div>${fm}${mp?`<div class="jc-price">${fmt(mp)}<small>/mes</small></div>`:''}</div>`}).join('')}</div></div></div>`;
+}
+
+// ── STEP 3: BUNDLE ──
+function jP3(){
+  const es=lang==='es';
+  const BN={'1p-data':es?'1P Solo Data':'1P Data Only','1p-voice':es?'1P Solo Voz':'1P Voice Only','2p':'2P HSD + VoIP','3p-broadcast':'3P Broadcast','3p-esp':es?'3P Español / EDP':'3P Español / EDP','3p-ult':'3P Ultimate'};
+  if(J.step>3)return `<div class="jpanel done" onclick="jBack(3)"><div class="jpanel-done-hdr"><div class="jpanel-chk">✓</div><div class="jpanel-done-ttl">${es?'Servicio':'Service'}</div><div class="jpanel-done-val">${BN[J.bundle]||J.bundle} · ${J.price?fmt(J.price)+'/mes':'N/A'}</div><div class="jpanel-chng">${es?'Cambiar':'Change'}</div></div></div>`;
+  const plan=J.tech==='coax'?COAX.find(p=>p.speed===J.speed):J.tech==='fttx'?FTTX.find(p=>p.speed===J.speed):FMC_PLANS.find(p=>p.displaySpeed===J.speed);
+  const pr=plan?.list||{};
+  const bundles=[
+    {v:'1p-data',badge:'1P',bc:'jcb-bl',nm:es?'Solo Data (HSD)':'Data Only (HSD)',inc:es?'• Internet de alta velocidad':'• High-speed internet',price:pr.p1},
+    {v:'1p-voice',badge:'1P',bc:'jcb-gy',nm:es?'Solo Voz':'Voice Only',inc:es?'• Servicio de voz · $34.99/1ra línea':'• Voice service · $34.99/1st line',price:34.99,fixed:true},
+    {v:'2p',badge:'2P',bc:'jcb-bl',nm:'HSD + VoIP',inc:es?'• Internet • Teléfono VoIP':'• Internet • VoIP phone',price:pr.p2},
+    {v:'3p-broadcast',badge:'3P',bc:'jcb-or',nm:'Broadcast',inc:es?'• Internet • Teléfono • TV Broadcast':'• Internet • Phone • Broadcast TV',price:pr.p3b},
+    {v:'3p-esp',badge:'3P',bc:'jcb-or',nm:es?'Español De Primera':'Español De Primera',inc:es?'• Internet • Teléfono • TV Español':'• Internet • Phone • Español TV',price:pr.p3e},
+    {v:'3p-ult',badge:'3P',bc:'jcb-or',nm:'Ultimate',inc:es?'• Internet • Teléfono • TV Ultimate + canales premium':'• Internet • Phone • Ultimate TV + premium channels',price:pr.p3u},
+  ];
+  return `<div class="jpanel"><div class="jpanel-hdr"><div class="jpanel-sn">${es?'Paso 3 de 6':'Step 3 of 6'}</div><div class="jpanel-st">${es?'¿Qué servicios necesita el cliente?':'What services does the customer need?'}</div></div><div class="jpanel-body"><div class="jcards cb">${bundles.map(b=>{const na=!b.fixed&&b.price==null;return `<div class="jcard${na?' off':''}${J.bundle===b.v?' sel':''}" ${!na?`onclick="jSelBundle('${b.v}')"`:''}><span class="jcbadge ${b.bc}">${b.badge}</span><div class="jc-name">${b.nm}</div><div class="jc-inc">${b.inc}</div><div class="jc-price ${na?'na':''}">${na?(es?'No disponible':'Not available'):fmt(b.price)+'<small>/mes</small>'}</div></div>`}).join('')}</div></div></div>`;
+}
+
+// ── STEP 4: PRICE TYPE ──
+function jP4(){
+  const es=lang==='es';
+  const PTL={'list':es?'Precio Lista':'List Price','promo':'Promo','lto-lead':'LTO Lead','lto-fmc':'LTO FMC'};
+  if(J.step>4)return `<div class="jpanel done" onclick="jBack(4)"><div class="jpanel-done-hdr"><div class="jpanel-chk">✓</div><div class="jpanel-done-ttl">${es?'Precio':'Price'}</div><div class="jpanel-done-val">${PTL[J.ptype]||J.ptype} · ${J.price?fmt(J.price)+'/mes':'N/A'}</div><div class="jpanel-chng">${es?'Cambiar':'Change'}</div></div></div>`;
+  const all=[{v:'list',lbl:es?'Precio Lista':'List Price',desc:es?'Precio estándar':'Standard price'},{v:'promo',lbl:'Promo',desc:es?'Descuento disponible':'Available discount'},{v:'lto-lead',lbl:'LTO Lead',desc:es?'Requiere contrato':'Requires contract'},{v:'lto-fmc',lbl:'LTO FMC',desc:es?'Cliente con móvil B2B':'Customer with B2B mobile'}];
+  const opts=J.tech==='fmc'?all.slice(0,2):all;
+  const warn=J.ptype==='lto-lead'||J.ptype==='lto-fmc'?`<div class="jao-note" style="margin-top:10px">⚠️ ${es?'Si no renueva contrato, el precio pasará automáticamente al Precio Lista.':'If customer does not renew contract, price will revert to List Price.'}</div>`:'';
+  const fmcWarn=(J.ptype==='lto-fmc'||J.ptype==='fmc')?`<div class="jao-note" style="margin-top:8px;background:#f5f3ff;border-color:#ddd6fe;color:#5b21b6">🔗 ${es?'Verifica elegibilidad FMC en <strong>MyKnowledge en Salesforce</strong>.':'Verify FMC eligibility in <strong>MyKnowledge in Salesforce</strong>.'}</div>`:'';
+  return `<div class="jpanel"><div class="jpanel-hdr"><div class="jpanel-sn">${es?'Paso 4 de 6':'Step 4 of 6'}</div><div class="jpanel-st">${es?'Selecciona el tipo de precio':'Select the pricing type'}</div></div><div class="jpanel-body"><div class="jcards c2">${opts.map(pt=>{const price=lookupPrice(J.tech,J.speed,J.bundle,pt.v);const na=price==null;return `<div class="jcard${na?' off':''}${J.ptype===pt.v&&!na?' sel':''}" ${!na?`onclick="jSelPtype('${pt.v}')"`:''}><div class="jc-name">${pt.lbl}</div><div class="jc-sub">${pt.desc}</div><div class="jc-price ${na?'na':''}">${na?(es?'No disponible':'Not available'):`${fmt(price)}<small>/mes</small>`}</div></div>`}).join('')}</div>${warn}${fmcWarn}</div></div>`;
+}
+
+// ── STEP 5: ADD-ONS (CONTEXTUAL) ──
+function jP5(){
+  const es=lang==='es';
+  const b=J.bundle;
+  const hasHSD=b!=='1p-voice';
+  const hasVoIP=b==='2p'||b==='3p-broadcast'||b==='3p-esp'||b==='3p-ult';
+  const hasVideo=b==='3p-broadcast'||b==='3p-esp'||b==='3p-ult';
+
+  function chk(id,name,price,sub){
+    const on=!!J.addons[id];
+    return `<div class="jao-item${on?' on':''}" onclick="jToggle('${id}','${name}',${price})"><input type="checkbox" ${on?'checked':''} onclick="event.stopPropagation();jToggle('${id}','${name}',${price})"><div class="jao-iname">${name}${sub?`<div class="jao-isub">${sub}</div>`:''}</div><div class="jao-iprice">${fmt(price)}</div></div>`;
+  }
+  function qty(id,name,price,sub){
+    const cur=J.addons[id]?.qty||0;
+    return `<div class="jao-qty"><div style="flex:1"><div class="jao-iname">${name}</div>${sub?`<div class="jao-isub">${sub}</div>`:''}</div><input class="jao-qin" type="number" min="0" max="9" value="${cur}" onchange="jQty('${id}','${name}',${price},this.value)"><div class="jao-iprice">${fmt(price)} c/u</div></div>`;
+  }
+  function grp(icon,title,content){return `<div class="jao-grp"><div class="jao-gtl">${icon} ${title}</div><div class="jao-grid">${content}</div></div>`;}
+
+  let secs='';
+
+  // Internet add-ons
+  if(hasHSD){
+    secs+=grp('🌐',es?'Add-ons de Internet':'Internet Add-ons',
+      chk('ao1','Liberty Business Ongoing',20.00,'Any HSD Plan · LTO: $9.99')+
+      chk('ao3','IP Static',40.00,'Any HSD Plan')+
+      chk('ao4','Antivirus',9.99,'Any Bundle')+
+      chk('ao5','Nube (Storage)',15.99,'Any Bundle')+
+      chk('ao6','Tienda Online',15.99,'Any Bundle'));
+  }
+
+  // VoIP add-ons
+  if(hasVoIP){
+    secs+=grp('📞',es?'Add-ons de Voz':'Voice Add-ons',
+      chk('ao2','Hunting',25.00,'Any VoIP Plan')+
+      chk('ao7','Voicemail',4.99,'Any VoIP Plan'));
+  }
+
+  // Standalone voice lines (1P Voice only)
+  if(b==='1p-voice'){
+    secs+=grp('📞',es?'Líneas de Voz':'Voice Lines',
+      qty('v1line',es?'1P Voice — 1ra Línea':'1P Voice — 1st Line',34.99)+
+      qty('vadd',es?'Líneas adicionales':'Additional lines',29.99));
+  }
+
+  // 2P optional video upgrade
+  if(b==='2p'){
+    secs+=`<div class="jao-grp"><div class="jao-gtl">📺 ${es?'Agregar Video (opcional)':'Add Video (optional)'}</div><div class="jao-note">💡 ${es?'El 2P no incluye video. Si el cliente quiere TV, puedes agregar un paquete standalone o considerar subir a 3P.':'The 2P does not include video. If the customer wants TV, you can add a standalone package or consider upgrading to 3P.'}</div><div class="jao-grid">${chk('vid-bcast','Video — Broadcast',20.00,es?'Paquete standalone (HSD ≥ 10/1)':'Standalone package (HSD ≥ 10/1)')+chk('vid-edp','Video — Español De Primera',67.49,es?'Con HSD · paquete 2P':'With HSD · 2P bundle pricing')+chk('vid-ult','Video — Ultimate',111.49,es?'Con HSD · paquete 2P':'With HSD · 2P bundle pricing')}</div></div>`;
+  }
+
+  // Video extras (contextual by 3P bundle)
+  if(hasVideo){
+    const stbs=qty('stb2',es?'STB 2do equipo':'STB 2nd unit',6.99)+qty('stb3',es?'STB 3er equipo':'STB 3rd unit',5.49)+qty('stb4',es?'STB 4to+ equipo':'STB 4th+ unit',3.99);
+    const fox=chk('foxd','Fox Deportes',25.00,es?'Canal adicional':'Additional channel');
+    let inc='',extras='';
+    if(b==='3p-broadcast'){
+      inc=es?'✅ Video Broadcast incluido en el plan.':'✅ Broadcast Video is included in the plan.';
+      extras=fox+stbs;
+    } else if(b==='3p-esp'){
+      inc=es?'✅ Español De Primera incluido en el plan.':'✅ Español De Primera is included in the plan.';
+      extras=fox+chk('out-esp',es?'Outlet Adicional EDP':'Additional EDP Outlet',29.99,es?'c/7mo gratis':'every 7th free')+stbs;
+    } else if(b==='3p-ult'){
+      inc=es?'✅ Video Ultimate incluido. Agrega canales y equipos:':'✅ Ultimate Video included. Add channels and equipment:';
+      const ultChs=ULT_ADDONS.map(u=>chk('uad-'+u.id,u.name,u.price,es?'Requiere Ultimate':'Requires Ultimate')).join('');
+      extras=fox+chk('out-ult',es?'Outlet Adicional Ultimate':'Additional Ultimate Outlet',65.99,es?'c/7mo gratis':'every 7th free')+stbs+`<div style="grid-column:1/-1;padding:6px 0 2px;font-size:10px;font-weight:800;color:var(--purple);text-transform:uppercase;letter-spacing:.5px">⭐ ${es?'Canales Premium Ultimate':'Ultimate Premium Channels'}</div>`+ultChs;
+    }
+    secs+=`<div class="jao-grp"><div class="jao-gtl">📺 ${es?'Video & Equipos':'Video & Equipment'}</div>${inc?`<div class="jao-inc">${inc}</div>`:''}<div class="jao-grid">${extras}</div></div>`;
+  }
+
+  // Hardware (if internet included)
+  if(hasHSD){
+    secs+=grp('⚙️',es?'Hardware & Servicios Administrados':'Hardware & Managed Services',
+      chk('hw1','Forti Wifi30G',28.25,es?'Seguridad WiFi':'WiFi Security')+
+      chk('hw2','FEX-101F',11.75,es?'Switch / Extensión':'Switch / Extension')+
+      chk('hw3','Managed WAN',45.00,es?'WAN administrado':'Managed WAN')+
+      chk('hw4','Managed MSS',22.00,es?'Seguridad administrada':'Managed Security'));
+  }
+
+  return `<div class="jpanel"><div class="jpanel-hdr"><div class="jpanel-sn">${es?'Paso 5 de 6':'Step 5 of 6'}</div><div class="jpanel-st">${es?'¿Qué servicios adicionales desea el cliente?':'What additional services does the customer want?'}</div></div><div class="jpanel-body">${secs}<button class="jcont" onclick="jSave();J.step=6;renderProposal()">${es?'Continuar al Resumen →':'Continue to Summary →'}</button></div></div>`;
+}
+
+// ── STEP 6: SUMMARY + GENERATE ──
+function jP6(){
+  const es=lang==='es';
+  const total=(J.price||0)+Object.values(J.addons).reduce((s,a)=>s+a.price,0);
+  const aoRows=Object.values(J.addons).map(a=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-weight:600;flex:1">${a.name}</span><span style="font-weight:700">${fmt(a.price)}</span></div>`).join('');
+  return `<div class="jpanel"><div class="jpanel-hdr"><div class="jpanel-sn">${es?'Paso 6 de 6':'Step 6 of 6'}</div><div class="jpanel-st">${es?'Información del cliente y resumen final':'Customer information and final summary'}</div></div><div class="jpanel-body"><div class="jcf"><div class="jcfg"><label class="jcfl">${t('prop.customer')}</label><input class="jcfi" id="jc-name" placeholder="${t('prop.customer')}"></div><div class="jcfg"><label class="jcfl">${t('prop.account')}</label><input class="jcfi" id="jc-acct" placeholder="#"></div><div class="jcfg"><label class="jcfl">${t('prop.rep')}</label><input class="jcfi" id="jc-rep" placeholder="${t('prop.rep')}"></div><div class="jcfg"><label class="jcfl">${t('prop.date')}</label><input class="jcfi" id="jc-date" type="date" value="${jCust.date}"></div><div class="jcfg jcff"><label class="jcfl">${t('prop.notes')}</label><textarea class="jcfi" id="jc-notes" style="min-height:48px;resize:vertical" placeholder="${t('prop.notes')}"></textarea></div></div><div style="background:var(--bg);border-radius:10px;padding:13px;margin-bottom:13px"><div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:9px">${es?'Servicios Seleccionados':'Selected Services'}</div>${J.price?`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);margin-bottom:5px"><span style="font-size:13px;font-weight:700">${J.tech?.toUpperCase()} ${J.speed} — ${t('b'+J.bundle)} (${t('prop.ptype.'+J.ptype)})</span><span style="font-size:14px;font-weight:800;color:var(--blue)">${fmt(J.price)}</span></div>`:''}<div>${aoRows}</div><div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:2px solid var(--border)"><span style="font-size:13px;font-weight:800">${t('prop.total')}</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--blue)">${fmt(total)}</span></div></div><button class="jbtn-gen" onclick="generateProposalJ()">🖨️ ${t('prop.generate')}</button></div></div>`;
+}
+
+// ── SUMMARY SIDEBAR ──
+function jSumHtml(){
+  const es=lang==='es';
+  const hasContent=J.price||Object.keys(J.addons).length>0;
+  if(!hasContent)return `<div class="jsum-ttl">${t('prop.summary')}</div><div class="jsum-emp">${es?'Selecciona tecnología, velocidad y bundle para comenzar.':'Select technology, speed and bundle to start.'}</div><div class="jbtn-gen" style="opacity:.35;cursor:not-allowed;padding:10px;border-radius:8px;background:var(--orange);color:white;font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:800;text-align:center">🖨️ ${t('prop.generate')}</div>`;
+  const total=(J.price||0)+Object.values(J.addons).reduce((s,a)=>s+a.price,0);
+  const aoHtml=Object.values(J.addons).map(a=>`<div class="jsum-ao"><span class="jsum-an">${a.name}</span><span class="jsum-ap">${fmt(a.price)}</span></div>`).join('');
+  return `<div class="jsum-ttl">${t('prop.summary')}</div>${J.price?`<div class="jsum-plan"><div class="jsum-pnm">${J.tech?.toUpperCase()} ${J.speed} Mbps · ${t('b'+J.bundle)}</div><div class="jsum-ppr">${fmt(J.price)}<small>/mes</small></div></div>`:''}<div class="jsum-aos">${aoHtml||`<div style="font-size:11px;color:#d1d5db;font-style:italic">${es?'Sin add-ons aún':'No add-ons yet'}</div>`}</div><div class="jsum-div"></div><div class="jsum-tot"><span class="jsum-tl">${t('prop.total')}</span><span class="jsum-tv">${fmt(total)}</span></div><button class="jbtn-gen" onclick="generateProposalJ()">🖨️ ${t('prop.generate')}</button><button class="jbtn-rst" onclick="jReset()">🔄 ${es?'Reiniciar':'Reset'}</button>`;
+}
+
+// ── RENDER PROPOSAL ──
+function renderProposal(){
+  jSave();
+  document.getElementById('tab-proposal').innerHTML=`
+    <div class="jlayout">
+      <div class="jmain">
+        ${jBar()}
+        ${jP1()}
+        ${J.step>=2?jP2():''}
+        ${J.step>=3?jP3():''}
+        ${J.step>=4?jP4():''}
+        ${J.step>=5?jP5():''}
+        ${J.step>=6?jP6():''}
+      </div>
+      <div class="jright"><div class="jsumbox" id="jsum-inner">${jSumHtml()}</div></div>
+    </div>`;
+  // Restore form values
+  const n=document.getElementById('jc-name');
+  if(n){n.value=jCust.name;document.getElementById('jc-acct').value=jCust.account;document.getElementById('jc-rep').value=jCust.rep;document.getElementById('jc-date').value=jCust.date;const nt=document.getElementById('jc-notes');if(nt)nt.value=jCust.notes;}
+  jBadge();
+}
+
+// ── GENERATE PRINT PROPOSAL ──
+function generateProposalJ(){
+  jSave();
+  if(!J.price&&Object.keys(J.addons).length===0){alert(lang==='es'?'Agrega al menos un servicio.':'Add at least one service.');return;}
+  const total=(J.price||0)+Object.values(J.addons).reduce((s,a)=>s+a.price,0);
+  const planRow=J.price?`<tr><td>${J.tech?.toUpperCase()} ${J.speed} Mbps — ${t('b'+J.bundle)} (${t('prop.ptype.'+J.ptype)})</td><td>${fmt(J.price)}</td></tr>`:'';
+  const aoRows=Object.values(J.addons).map(a=>`<tr><td>${a.name}</td><td>${fmt(a.price)}</td></tr>`).join('');
+  const notesHtml=jCust.notes?`<div class="pv-notes"><label>${t('pv.notes')}</label>${jCust.notes}</div>`:'';
+  document.getElementById('pv-inner').innerHTML=`
+    <div class="pv-header"><div><div class="pv-logo">Liberty<span>Business</span><small>${t('pv.proposal')}</small></div></div><div class="pv-date-box"><div>${lang==='es'?'Fecha':'Date'}</div><strong>${jCust.date}</strong></div></div>
+    <div class="pv-info-grid"><div class="pv-info-item"><label>${t('prop.customer')}</label><span>${jCust.name||'—'}</span></div><div class="pv-info-item"><label>${t('prop.account')}</label><span>${jCust.account||'—'}</span></div><div class="pv-info-item"><label>${t('prop.rep')}</label><span>${jCust.rep||'—'}</span></div><div class="pv-info-item"><label>Abr 2026</label><span>Rate Increase 2026</span></div></div>
+    <div class="pv-sec-title">${t('pv.services')}</div>
+    <table class="pv-table"><thead><tr><th>${t('pv.description')}</th><th>${t('pv.monthly')}</th></tr></thead><tbody>${planRow}${aoRows}</tbody></table>
+    <div class="pv-total-row"><span class="pv-total-label">${t('pv.total')}</span><span class="pv-total-value">${fmt(total)}</span></div>
+    ${notesHtml}
+    <div class="pv-disc">${t('pv.disc')}</div>
+    <div class="pv-sig"><div class="pv-sig-line">${t('pv.sig.client')}<br><br></div><div class="pv-sig-line">${t('pv.sig.rep')}<br><br></div></div>`;
+  window.print();
+}
+
+// LEGACY STUBS (kept for compatibility)
+function speedOptions(tech){
+  let plans;
+  if(tech==='coax') plans=COAX.map(p=>({v:p.speed,l:p.speed+' Mbps'}));
+  else if(tech==='fttx') plans=FTTX.map(p=>({v:p.speed,l:p.speed+' Mbps'}));
+  else plans=FMC_PLANS.map(p=>({v:p.displaySpeed,l:p.displaySpeed+' Mbps (FMC)'}));
+  return plans.map(p=>`<option value="${p.v}">${p.l}</option>`).join('');
+}
+function bundleOptions(tech,ptype){
+  const bundles=[
+    {v:'1p-data',  k:'b1p-data'},
+    {v:'1p-voice', k:'b1p-voice'},
+    {v:'2p',       k:'b2p'},
+    {v:'3p-broadcast',k:'b3p-broadcast'},
+    {v:'3p-esp',   k:'b3p-esp'},
+    {v:'3p-ult',   k:'b3p-ult'},
+  ];
+  return bundles.map(b=>`<option value="${b.v}">${t(b.k)}</option>`).join('');
+}
+function ptypeOptions(tech){
+  const base=[
+    {v:'list',t:'prop.ptype.list'},{v:'promo',t:'prop.ptype.promo'},
+    {v:'lto-lead',t:'prop.ptype.lto-lead'},{v:'lto-fmc',t:'prop.ptype.lto-fmc'}
+  ];
+  const opts=tech==='fmc'?base.slice(0,2):base;
+  return opts.map(o=>`<option value="${o.v}">${t(o.t)}</option>`).join('');
+}
+
+function renderProposal(){
+  const today=new Date().toISOString().split('T')[0];
+  const extraAddons=ADDONS.map(a=>`
+    <div class="extra-row">
+      <input type="checkbox" id="ex-${a.id}" onchange="toggleExtra('${a.id}','${a.name}',${a.price},this)">
+      <div style="flex:1"><div class="extra-name">${a.name}</div><div class="extra-sub">${a.sub}</div></div>
+      <div class="extra-price">${fmt(a.price)}</div>
+    </div>`).join('');
+  const extraVid=[
+    ...VIDEO_1P.map(v=>`<div class="extra-row"><input type="checkbox" id="ex-${v.id}" onchange="toggleExtra('${v.id}','Video ${v.name}',${v.price},this)"><div style="flex:1"><div class="extra-name">${v.name}</div><div class="extra-sub">Video (1P)</div></div><div class="extra-price">${fmt(v.price)}</div></div>`),
+    ...ULT_ADDONS.map(u=>`<div class="extra-row"><input type="checkbox" id="ex-${u.id}" onchange="toggleExtra('${u.id}','${u.name}',${u.price},this)"><div style="flex:1"><div class="extra-name">${u.name}</div><div class="extra-sub">Ultimate Add-on</div></div><div class="extra-price">${fmt(u.price)}</div></div>`),
+    `<div class="extra-row"><input type="checkbox" id="ex-foxd" onchange="toggleExtra('foxd','Fox Deportes',25,this)"><div style="flex:1"><div class="extra-name">Fox Deportes</div><div class="extra-sub">${lang==='es'?'Canal especial':'Special channel'}</div></div><div class="extra-price">$25.00</div></div>`,
+    `<div class="extra-row"><div style="display:flex;align-items:center;gap:8px;flex:1"><div><div class="extra-name">${lang==='es'?'STBs adicionales (2do)':'Extra STBs (2nd)'}</div><div class="extra-sub">$6.99 c/u</div></div></div><input type="number" id="ex-stb2" min="0" max="9" value="0" onchange="updateQtyExtra('stb2',lang==='es'?'STB 2do equipo':'STB 2nd unit',6.99,this)"><div class="extra-price">$6.99</div></div>`,
+    `<div class="extra-row"><div style="display:flex;align-items:center;gap:8px;flex:1"><div><div class="extra-name">${lang==='es'?'STBs adicionales (3ro)':'Extra STBs (3rd)'}</div><div class="extra-sub">$5.49 c/u</div></div></div><input type="number" id="ex-stb3" min="0" max="9" value="0" onchange="updateQtyExtra('stb3',lang==='es'?'STB 3er equipo':'STB 3rd unit',5.49,this)"><div class="extra-price">$5.49</div></div>`,
+    `<div class="extra-row"><div style="display:flex;align-items:center;gap:8px;flex:1"><div><div class="extra-name">${lang==='es'?'STBs adicionales (4to+)':'Extra STBs (4th+)'}</div><div class="extra-sub">$3.99 c/u</div></div></div><input type="number" id="ex-stb4" min="0" max="9" value="0" onchange="updateQtyExtra('stb4',lang==='es'?'STB 4to+ equipo':'STB 4th+ unit',3.99,this)"><div class="extra-price">$3.99</div></div>`,
+  ].join('');
+  const extraVoice=[
+    `<div class="extra-row"><div style="display:flex;align-items:center;gap:8px;flex:1"><div><div class="extra-name">${lang==='es'?'1P Voice — 1ra Línea':'1P Voice — 1st Line'}</div><div class="extra-sub">$34.99</div></div></div><input type="number" id="ex-v1" min="0" max="10" value="0" onchange="updateQtyExtra('v1line',lang==='es'?'1P Voice (1ra línea)':'1P Voice (1st line)',34.99,this)"><div class="extra-price">$34.99</div></div>`,
+    `<div class="extra-row"><div style="display:flex;align-items:center;gap:8px;flex:1"><div><div class="extra-name">${lang==='es'?'Líneas adicionales':'Additional Lines'}</div><div class="extra-sub">$29.99 c/u</div></div></div><input type="number" id="ex-vadd" min="0" max="9" value="0" onchange="updateQtyExtra('vlineadd',lang==='es'?'Líneas adicionales':'Additional lines',29.99,this)"><div class="extra-price">$29.99</div></div>`,
+  ].join('');
+  const extraHw=HARDWARE.map(h=>`
+    <div class="extra-row">
+      <input type="checkbox" id="ex-${h.id}" onchange="toggleExtra('${h.id}','${h.name}',${h.price},this)">
+      <div style="flex:1"><div class="extra-name">${h.name}</div><div class="extra-sub">${h.sub}</div></div>
+      <div class="extra-price">${fmt(h.price)}</div>
+    </div>`).join('');
+
+  document.getElementById('tab-proposal').innerHTML=`
+    <div class="prop-layout">
+      <!-- LEFT: BUILDER -->
+      <div class="prop-left">
+        <!-- Customer Info -->
+        <div class="prop-section">
+          <div class="prop-sec-title">${t('prop.info')}</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">${t('prop.customer')}</label><input class="form-input" id="p-customer" placeholder="${t('prop.customer')}"></div>
+            <div class="form-group"><label class="form-label">${t('prop.account')}</label><input class="form-input" id="p-account" placeholder="#"></div>
+            <div class="form-group"><label class="form-label">${t('prop.rep')}</label><input class="form-input" id="p-rep" placeholder="${t('prop.rep')}"></div>
+            <div class="form-group"><label class="form-label">${t('prop.date')}</label><input class="form-input" id="p-date" type="date" value="${today}"></div>
+          </div>
+        </div>
+        <!-- Plan Builder -->
+        <div class="prop-section">
+          <div class="prop-sec-title">${t('prop.plan')}</div>
+          <div class="sel-grid">
+            <div class="form-group"><label class="form-label">${t('prop.tech')}</label>
+              <select class="form-select" id="ps-tech" onchange="onPSTechChange()">
+                <option value="coax">COAX</option><option value="fttx">FTTx</option><option value="fmc">FMC</option>
+              </select></div>
+            <div class="form-group"><label class="form-label">${t('prop.speed')}</label>
+              <select class="form-select" id="ps-speed" onchange="updatePropPrice()"></select></div>
+            <div class="form-group"><label class="form-label">${t('prop.bundle')}</label>
+              <select class="form-select" id="ps-bundle" onchange="updatePropPrice()"></select></div>
+            <div class="form-group"><label class="form-label">${t('prop.pricetype')}</label>
+              <select class="form-select" id="ps-ptype" onchange="updatePropPrice()"></select></div>
+          </div>
+          <div class="price-preview">
+            <span class="pp-label">${t('prop.sel.price')}</span>
+            <span class="pp-price" id="pp-price">—</span>
+          </div>
+          <button class="btn-add" id="btn-add-plan" onclick="addPlanToCart()">${t('prop.addplan')}</button>
+        </div>
+        <!-- Extras -->
+        <div class="prop-section">
+          <div class="prop-sec-title">${t('prop.extras.addons')}</div>
+          <div class="extras-list">${extraAddons}</div>
+          <div class="extras-cat">${t('prop.extras.voice')}</div>
+          <div class="extras-list">${extraVoice}</div>
+          <div class="extras-cat">${t('prop.extras.video')}</div>
+          <div class="extras-list">${extraVid}</div>
+          <div class="extras-cat">${t('prop.extras.hw')}</div>
+          <div class="extras-list">${extraHw}</div>
+        </div>
+      </div>
+      <!-- RIGHT: CART -->
+      <div class="prop-right">
+        <div class="cart-box">
+          <div class="cart-title">${t('prop.summary')}</div>
+          <div class="cart-items" id="cart-items"></div>
+          <div class="cart-divider"></div>
+          <div class="cart-total-row">
+            <span class="cart-total-label">${t('prop.total')}</span>
+            <span class="cart-total-value" id="cart-total">$0.00</span>
+          </div>
+          <textarea class="notes-input" id="prop-notes" placeholder="${t('prop.notes')}"></textarea>
+          <button class="btn-gen" onclick="generateProposal()">${t('prop.generate')}</button>
+          <button class="btn-clr" onclick="clearCart()">${t('prop.clear')}</button>
+        </div>
+      </div>
+    </div>`;
+
+  // Init selects
+  onPSTechChange();
+  renderCart();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PROPOSAL LOGIC
+// ═══════════════════════════════════════════════════════════════════════════
+function onPSTechChange(){
+  const tech=document.getElementById('ps-tech')?.value||'coax';
+  const spEl=document.getElementById('ps-speed');
+  const ptEl=document.getElementById('ps-ptype');
+  const buEl=document.getElementById('ps-bundle');
+  if(spEl) spEl.innerHTML=speedOptions(tech);
+  if(ptEl) ptEl.innerHTML=ptypeOptions(tech);
+  if(buEl) buEl.innerHTML=bundleOptions(tech);
+  updatePropPrice();
+}
+function updatePropPrice(){
+  const tech=document.getElementById('ps-tech')?.value;
+  const speed=document.getElementById('ps-speed')?.value;
+  const bundle=document.getElementById('ps-bundle')?.value;
+  const ptype=document.getElementById('ps-ptype')?.value;
+  const priceEl=document.getElementById('pp-price');
+  const btnEl=document.getElementById('btn-add-plan');
+  if(!tech||!speed||!bundle||!ptype){ if(priceEl) priceEl.textContent='—'; return; }
+  const price=lookupPrice(tech,speed,bundle,ptype);
+  if(priceEl){
+    if(price==null){ priceEl.textContent='N/A'; priceEl.className='pp-price na'; }
+    else { priceEl.textContent=fmt(price)+'/mes'; priceEl.className='pp-price'; }
+  }
+  if(btnEl) btnEl.disabled=(price==null);
+}
+function addPlanToCart(){
+  const tech=document.getElementById('ps-tech').value;
+  const speed=document.getElementById('ps-speed').value;
+  const bundle=document.getElementById('ps-bundle').value;
+  const ptype=document.getElementById('ps-ptype').value;
+  const price=lookupPrice(tech,speed,bundle,ptype);
+  if(price==null) return;
+  const bundleLabel=t('b'+bundle);
+  const ptLabel=t('prop.ptype.'+ptype);
+  const name=`${tech.toUpperCase()} ${speed} — ${bundleLabel} (${ptLabel})`;
+  const id='plan-'+Date.now();
+  cartItems.push({id,name,price,removable:true});
+  renderCart();
+}
+function toggleExtra(id,name,price,el){
+  if(el.checked){ cartItems.push({id:'ex-'+id,name,price,removable:true,cbId:el.id}); }
+  else { cartItems=cartItems.filter(c=>c.id!=='ex-'+id); }
+  renderCart();
+}
+function updateQtyExtra(id,name,unitPrice,el){
+  const qty=parseInt(el.value)||0;
+  cartItems=cartItems.filter(c=>c.id!=='qty-'+id);
+  if(qty>0) cartItems.push({id:'qty-'+id,name:`${name} × ${qty}`,price:unitPrice*qty,removable:true,numId:el.id});
+  renderCart();
+}
+function removeCartItem(id){
+  const item=cartItems.find(c=>c.id===id);
+  if(item){
+    if(item.cbId){ const cb=document.getElementById(item.cbId); if(cb) cb.checked=false; }
+    if(item.numId){ const ni=document.getElementById(item.numId); if(ni) ni.value=0; }
+  }
+  cartItems=cartItems.filter(c=>c.id!==id);
+  renderCart();
+}
+function renderCart(){
+  const el=document.getElementById('cart-items');
+  const tot=document.getElementById('cart-total');
+  if(!el||!tot) return;
+  if(cartItems.length===0){
+    el.innerHTML=`<div class="cart-empty">${t('prop.empty')}</div>`;
+    tot.textContent='$0.00';
+  } else {
+    el.innerHTML=cartItems.map(c=>`
+      <div class="cart-item">
+        <div class="cart-item-name">${c.name}</div>
+        <div class="cart-item-price">${fmt(c.price)}</div>
+        ${c.removable?`<button class="cart-remove" onclick="removeCartItem('${c.id}')">×</button>`:''}
+      </div>`).join('');
+    const total=cartItems.reduce((s,c)=>s+c.price,0);
+    tot.textContent=fmt(total);
+  }
+  // Update cart badge on tab button
+  const propBtn=document.querySelector('[data-tab="proposal"]');
+  if(propBtn){
+    const base=t('tab.proposal');
+    propBtn.innerHTML=cartItems.length>0?`${base} <span style="background:var(--orange);color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:800;margin-left:4px">${cartItems.length}</span>`:base;
+  }
+}
+function clearCart(){
+  cartItems=[];
+  // Reset checkboxes and number inputs
+  document.querySelectorAll('#tab-proposal input[type=checkbox]').forEach(cb=>cb.checked=false);
+  document.querySelectorAll('#tab-proposal input[type=number]').forEach(ni=>ni.value=0);
+  renderCart();
+}
+function generateProposal(){
+  const customer=document.getElementById('p-customer')?.value||'—';
+  const account=document.getElementById('p-account')?.value||'—';
+  const rep=document.getElementById('p-rep')?.value||'—';
+  const date=document.getElementById('p-date')?.value||new Date().toISOString().split('T')[0];
+  const notes=document.getElementById('prop-notes')?.value||'';
+  if(cartItems.length===0){ alert(lang==='es'?'El carrito está vacío. Agrega al menos un servicio.':'Cart is empty. Add at least one service.'); return; }
+  const total=cartItems.reduce((s,c)=>s+c.price,0);
+  const rows=cartItems.map(c=>`<tr><td>${c.name}</td><td>${fmt(c.price)}</td></tr>`).join('');
+  const notesHtml=notes?`<div class="pv-notes"><label>${t('pv.notes')}</label>${notes}</div>`:'';
+  document.getElementById('pv-inner').innerHTML=`
+    <div class="pv-header">
+      <div><div class="pv-logo">Liberty<span>Business</span><small>${t('pv.proposal')}</small></div></div>
+      <div class="pv-date-box"><div>${lang==='es'?'Fecha':'Date'}</div><strong>${date}</strong></div>
+    </div>
+    <div class="pv-info-grid">
+      <div class="pv-info-item"><label>${t('prop.customer')}</label><span>${customer}</span></div>
+      <div class="pv-info-item"><label>${t('prop.account')}</label><span>${account}</span></div>
+      <div class="pv-info-item"><label>${t('prop.rep')}</label><span>${rep}</span></div>
+      <div class="pv-info-item"><label>${lang==='es'?'Actualizado':'Updated'}</label><span>Abr 2026</span></div>
+    </div>
+    <div class="pv-sec-title">${t('pv.services')}</div>
+    <table class="pv-table">
+      <thead><tr><th>${t('pv.description')}</th><th>${t('pv.monthly')}</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="pv-total-row">
+      <span class="pv-total-label">${t('pv.total')}</span>
+      <span class="pv-total-value">${fmt(total)}</span>
+    </div>
+    ${notesHtml}
+    <div class="pv-disc">${t('pv.disc')}</div>
+    <div class="pv-sig">
+      <div class="pv-sig-line">${t('pv.sig.client')}<br><br></div>
+      <div class="pv-sig-line">${t('pv.sig.rep')}<br><br></div>
+    </div>`;
+  window.print();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════════════════════════════════════
+function showTab(tab,btn){
+  curTab=tab;
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+function setTech(t,btn){ curTech=t; renderPlans(); }
+function setPriceType(p,btn){ curPrice=p; renderPlans(); }
+function setLtoTech(t,btn){ curLto=t; renderLto(); }
+function setLang(l){
+  lang=l;
+  document.getElementById('btn-es').classList.toggle('on',l==='es');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.documentElement.lang=l;
+  renderAll();
+}
+function renderAll(){
+  renderNav();
+  renderGuide(); renderPlans(); renderLto();
+  renderSpeciales(); renderAddons(); renderPromos(); renderProposal();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════
+renderAll();
+</script>
+</body>
+</html>
